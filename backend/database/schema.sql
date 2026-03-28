@@ -148,6 +148,11 @@ CREATE TABLE measurements (
     source           measurement_source NOT NULL DEFAULT 'manual',
     confidence_score NUMERIC,
     notes            TEXT,
+    wall_index       INTEGER,
+    length           NUMERIC,
+    height           NUMERIC,
+    width            NUMERIC,
+    quantity         NUMERIC DEFAULT 1,
     created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -168,6 +173,8 @@ CREATE TABLE estimates (
     markup_amount   NUMERIC NOT NULL DEFAULT 0,
     total           NUMERIC NOT NULL DEFAULT 0,
     valid_until     DATE,
+    sent_at         TIMESTAMPTZ,
+    approved_at     TIMESTAMPTZ,
     notes           TEXT,
     ghl_opportunity_id TEXT,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
