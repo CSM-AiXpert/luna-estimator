@@ -128,8 +128,6 @@ function EstimatePageInner({ projectId }: { projectId: string }) {
       ? "badge badge-gold"
       : estimate?.status === "rejected"
       ? "badge badge-error"
-      : estimate?.status === "pending"
-      ? "badge badge-warning"
       : "badge badge-muted"
 
   return (

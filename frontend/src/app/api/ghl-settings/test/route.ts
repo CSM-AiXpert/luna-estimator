@@ -26,16 +26,17 @@ export async function POST(req: NextRequest) {
   try {
     const supabase = await getSupabase()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    const uid = (user as any)?.id
+    if (!uid) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
     const { data: profile } = await supabase
-      .from("users").select("organization_id").eq("id", user.id).single()
-    if (!profile?.organization_id) return NextResponse.json({ error: "No organization" }, { status: 400 })
+      (supabase.from("users") as any).select("organization_id").eq("id", uid).single()
+    if (!(profile as any)?.organization_id) return NextResponse.json({ error: "No organization" }, { status: 400 })
 
     const { data: settings } = await supabase
-      .from("ghl_integration_settings")
+      (supabase.from("ghl_integration_settings") as any)
       .select("access_token, location_id")
-      .eq("organization_id", profile.organization_id)
+      .eq("organization_id", (profile as any)?.organization_id)
       .maybeSingle()
 
     if (!settings?.access_token) {

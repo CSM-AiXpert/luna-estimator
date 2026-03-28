@@ -26,10 +26,12 @@ export async function POST(req: NextRequest) {
   try {
     const supabase = await getSupabase()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    // @ts-ignore — Supabase types infer user as never in some configs
+    const authUser = user as { id: string } | null
+    if (!authUser) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-    const { data: profile } = await supabase
-      .from("users").select("organization_id").eq("id", user.id).single()
+    const { data: profile } = await (supabase
+      .from("users") as any).select("organization_id").eq("id", authUser.id).single()
     if (!profile?.organization_id) return NextResponse.json({ error: "No organization" }, { status: 400 })
 
     const { clientId, clientSecret, locationId } = await req.json()
@@ -59,8 +61,8 @@ export async function POST(req: NextRequest) {
       : null
 
     // Save settings with tokens
-    const { data: settings, error } = await supabase
-      .from("ghl_integration_settings")
+    const { data: settings, error } = await (supabase
+      .from("ghl_integration_settings") as any)
       .upsert({
         organization_id: profile.organization_id,
         is_active: true,

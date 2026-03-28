@@ -313,7 +313,7 @@ export default function GHLPage() {
                     <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>{desc}</p>
                   </div>
                   <Switch
-                    checked={(settings as Record<string, boolean>)?.[key] ?? false}
+                    checked={(settings as unknown as Record<string, boolean>)?.[key] ?? false}
                     onCheckedChange={(checked) => saveMutation.mutate({ [key]: checked })}
                     disabled={saveMutation.isPending}
                   />

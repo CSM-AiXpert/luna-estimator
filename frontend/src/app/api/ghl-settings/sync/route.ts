@@ -26,16 +26,17 @@ export async function POST(req: NextRequest) {
   try {
     const supabase = await getSupabase()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    const uid = (user as any)?.id
+    if (!uid) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-    const { data: profile } = await supabase
-      .from("users").select("organization_id").eq("id", user.id).single()
-    if (!profile?.organization_id) return NextResponse.json({ error: "No organization" }, { status: 400 })
+    const { data: profile } = await (supabase.from("users") as any)
+        .select("organization_id").eq("id", uid).single()
+    if (!(profile as any)?.organization_id) return NextResponse.json({ error: "No organization" }, { status: 400 })
 
     const { data: settings } = await supabase
       .from("ghl_integration_settings")
       .select("is_active, access_token, location_id")
-      .eq("organization_id", profile.organization_id)
+      .eq("organization_id", (profile as any)?.organization_id)
       .maybeSingle()
 
     if (!settings?.is_active || !settings?.access_token) {
@@ -46,7 +47,7 @@ export async function POST(req: NextRequest) {
     const { data: job, error } = await supabase
       .from("ghl_sync_jobs")
       .insert({
-        organization_id: profile.organization_id,
+        organization_id: (profile as any)?.organization_id,
         sync_type: "full",
         status: "pending",
       })
@@ -81,7 +82,7 @@ export async function POST(req: NextRequest) {
           const { error: upsertError } = await supabase
             .from("customers")
             .upsert({
-              organization_id: profile.organization_id,
+              organization_id: (profile as any)?.organization_id,
               ghl_contact_id: contact.id,
               first_name: contact.firstName ?? contact.name?.split(" ")[0] ?? "Unknown",
               last_name: contact.lastName ?? contact.name?.split(" ").slice(1).join(" ") ?? "—",
