@@ -235,8 +235,7 @@ function EstimatePageInner({ projectId }: { projectId: string }) {
                           <thead>
                             <tr className="border-b border-white/5">
                               <th className="text-left px-4 py-2 text-white/40 font-normal text-xs">Description</th>
-                              <th className="text-right px-4 py-2 text-white/40 font-normal text-xs">Material</th>
-                              <th className="text-right px-4 py-2 text-white/40 font-normal text-xs">Labor</th>
+                              <th className="text-right px-4 py-2 text-white/40 font-normal text-xs">Unit Cost</th>
                               <th className="text-right px-4 py-2 text-white/40 font-normal text-xs">Qty</th>
                               <th className="text-right px-4 py-2 text-white/40 font-normal text-xs">Total</th>
                             </tr>
@@ -251,10 +250,7 @@ function EstimatePageInner({ projectId }: { projectId: string }) {
                                   )}
                                 </td>
                                 <td className="px-4 py-2 text-right text-white/70">
-                                  {formatCurrency(item.total_cost)}
-                                </td>
-                                <td className="px-4 py-2 text-right text-white/70">
-                                  {formatCurrency(0)}
+                                  {formatCurrency(item.unit_cost)}
                                 </td>
                                 <td className="px-4 py-2 text-right text-white/50">
                                   {item.unit && <span className="mr-1">{item.unit} × </span>}

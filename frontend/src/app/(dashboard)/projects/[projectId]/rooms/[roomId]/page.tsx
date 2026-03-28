@@ -122,6 +122,7 @@ function RoomEstimatorInner({
   const [measurementsState, setMeasurementsState] = useState<Array<{
     id?: string
     category: "wall" | "ceiling" | "floor" | "trim" | "opening" | "misc"
+    sub_type?: "door" | "window"
     wall_index: number | null
     length: string
     height: string
@@ -222,11 +223,12 @@ function RoomEstimatorInner({
     toast({ title: "Measurements saved" })
   }
 
-  function addMeasurementRow(newCategory: typeof measurementsState[0]["category"]) {
+  function addMeasurementRow(newCategory: typeof measurementsState[0]["category"], subType?: "door" | "window") {
     setMeasurementsState((prev) => [
       ...prev,
       {
         category: newCategory,
+        sub_type: subType,
         wall_index: newCategory === "wall" ? prev.filter((m) => m.category === "wall").length + 1 : null,
         length: "",
         height: "",
@@ -274,6 +276,8 @@ function RoomEstimatorInner({
   const wallMeasurements = measurementsState.filter((m) => m.category === "wall")
   const ceilingMeasurement = measurementsState.find((m) => m.category === "ceiling")
   const openingMeasurements = measurementsState.filter((m) => m.category === "opening")
+  const doorMeasurements = openingMeasurements.filter((m) => m.sub_type === "door")
+  const windowMeasurements = openingMeasurements.filter((m) => m.sub_type === "window")
 
   const totalWallSqFt = wallMeasurements.reduce((sum, m) => {
     const l = parseFloat(m.length) || 0
@@ -286,13 +290,13 @@ function RoomEstimatorInner({
       (parseFloat(ceilingMeasurement.width) || 0)
     : 0
 
-  const totalDoorSqFt = openingMeasurements.reduce((sum, m) => {
+  const totalDoorSqFt = doorMeasurements.reduce((sum, m) => {
     const h = parseFloat(m.height) || 0
     const w = parseFloat(m.width) || 0
     return sum + h * w * (parseInt(m.quantity) || 1)
   }, 0)
 
-  const totalWindowSqFt = openingMeasurements.reduce((sum, m) => {
+  const totalWindowSqFt = windowMeasurements.reduce((sum, m) => {
     const h = parseFloat(m.height) || 0
     const w = parseFloat(m.width) || 0
     return sum + h * w * (parseInt(m.quantity) || 1)
@@ -517,12 +521,12 @@ function RoomEstimatorInner({
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <Label className="text-sm text-white/60">Doors</Label>
-                    <Button variant="ghost" size="sm" onClick={() => addMeasurementRow("opening")}>
+                    <Button variant="ghost" size="sm" onClick={() => addMeasurementRow("opening", "door")}>
                       <Plus className="h-3 w-3" />
                     </Button>
                   </div>
                   <div className="space-y-2">
-                    {openingMeasurements.map((m, idx) => (
+                    {doorMeasurements.map((m, idx) => (
                       <div key={idx} className="grid grid-cols-4 gap-2 items-center">
                         <div className="col-span-1">
                           <Input
@@ -563,12 +567,12 @@ function RoomEstimatorInner({
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <Label className="text-sm text-white/60">Windows</Label>
-                    <Button variant="ghost" size="sm" onClick={() => addMeasurementRow("opening")}>
+                    <Button variant="ghost" size="sm" onClick={() => addMeasurementRow("opening", "window")}>
                       <Plus className="h-3 w-3" />
                     </Button>
                   </div>
                   <div className="space-y-2">
-                    {openingMeasurements.map((m, idx) => (
+                    {windowMeasurements.map((m, idx) => (
                       <div key={idx} className="grid grid-cols-4 gap-2 items-center">
                         <div className="col-span-1">
                           <Input
