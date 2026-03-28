@@ -1,3 +1,39 @@
+-- Luna Estimator Migration - clean push
+-- Drop existing objects to allow clean re-push
+DROP TABLE IF EXISTS audit_logs CASCADE;
+DROP TABLE IF EXISTS webhook_events CASCADE;
+DROP TABLE IF EXISTS ghl_sync_jobs CASCADE;
+DROP TABLE IF EXISTS ghl_integration_settings CASCADE;
+DROP TABLE IF EXISTS ai_visualizer_runs CASCADE;
+DROP TABLE IF EXISTS processing_jobs CASCADE;
+DROP TABLE IF EXISTS project_files CASCADE;
+DROP TABLE IF EXISTS estimate_items CASCADE;
+DROP TABLE IF EXISTS estimates CASCADE;
+DROP TABLE IF EXISTS measurements CASCADE;
+DROP TABLE IF EXISTS room_photos CASCADE;
+DROP TABLE IF EXISTS rooms CASCADE;
+DROP TABLE IF EXISTS projects CASCADE;
+DROP TABLE IF EXISTS customers CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS organizations CASCADE;
+
+DROP TYPE IF EXISTS job_status CASCADE;
+DROP TYPE IF EXISTS visualizer_status CASCADE;
+DROP TYPE IF EXISTS sync_status CASCADE;
+DROP TYPE IF EXISTS user_role CASCADE;
+DROP TYPE IF EXISTS project_status CASCADE;
+DROP TYPE IF EXISTS room_status CASCADE;
+DROP TYPE IF EXISTS measurement_source CASCADE;
+DROP TYPE IF EXISTS estimate_status CASCADE;
+DROP TYPE IF EXISTS processing_status CASCADE;
+
+DROP FUNCTION IF EXISTS log_audit_action CASCADE;
+DROP FUNCTION IF EXISTS get_org_storage_prefix CASCADE;
+DROP FUNCTION IF EXISTS get_user_organization_id CASCADE;
+DROP FUNCTION IF EXISTS handle_new_user CASCADE;
+DROP FUNCTION IF EXISTS update_updated_at CASCADE;
+DROP FUNCTION IF EXISTS public.handle_new_user CASCADE;
+
 -- =============================================================================
 -- Luna Drywall & Paint Estimator — Full Database Schema
 -- =============================================================================
@@ -27,7 +63,7 @@ CREATE TYPE sync_status AS ENUM ('pending', 'processing', 'completed', 'failed')
 -- =============================================================================
 
 CREATE TABLE organizations (
-    id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name          TEXT NOT NULL,
     ghl_location_id  TEXT,
     ghl_pipeline_id  TEXT,
@@ -57,7 +93,7 @@ CREATE TABLE users (
 -- =============================================================================
 
 CREATE TABLE customers (
-    id             UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     ghl_contact_id TEXT,
     first_name     TEXT NOT NULL,
@@ -80,7 +116,7 @@ CREATE TABLE customers (
 -- =============================================================================
 
 CREATE TABLE projects (
-    id                    UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id                    UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id       UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     customer_id            UUID NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
     ghl_opportunity_id     TEXT,
@@ -104,7 +140,7 @@ CREATE TABLE projects (
 -- =============================================================================
 
 CREATE TABLE rooms (
-    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     project_id  UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
     name        TEXT NOT NULL,
     room_type   TEXT NOT NULL,
@@ -121,7 +157,7 @@ CREATE TABLE rooms (
 -- =============================================================================
 
 CREATE TABLE room_photos (
-    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     room_id     UUID NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
     storage_path TEXT NOT NULL,
     file_name   TEXT NOT NULL,
@@ -138,7 +174,7 @@ CREATE TABLE room_photos (
 -- =============================================================================
 
 CREATE TABLE measurements (
-    id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     room_id          UUID NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
     category         TEXT NOT NULL,
     measurement_type TEXT NOT NULL,
@@ -162,7 +198,7 @@ CREATE TABLE measurements (
 -- =============================================================================
 
 CREATE TABLE estimates (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     project_id      UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
     version         INTEGER NOT NULL DEFAULT 1,
     status          estimate_status NOT NULL DEFAULT 'draft',
@@ -188,7 +224,7 @@ CREATE TABLE estimates (
 -- =============================================================================
 
 CREATE TABLE estimate_items (
-    id           UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     estimate_id  UUID NOT NULL REFERENCES estimates(id) ON DELETE CASCADE,
     room_id      UUID REFERENCES rooms(id) ON DELETE SET NULL,
     category     TEXT NOT NULL,
@@ -207,7 +243,7 @@ CREATE TABLE estimate_items (
 -- =============================================================================
 
 CREATE TABLE project_files (
-    id                UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     project_id        UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
     room_id           UUID REFERENCES rooms(id) ON DELETE SET NULL,
     storage_path      TEXT NOT NULL,
@@ -228,7 +264,7 @@ CREATE TABLE project_files (
 -- =============================================================================
 
 CREATE TABLE processing_jobs (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     project_file_id UUID NOT NULL REFERENCES project_files(id) ON DELETE CASCADE,
     job_type        TEXT NOT NULL,
     status          job_status NOT NULL DEFAULT 'pending',
@@ -246,7 +282,7 @@ CREATE TABLE processing_jobs (
 -- =============================================================================
 
 CREATE TABLE ai_visualizer_runs (
-    id                 UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id                 UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     room_photo_id      UUID NOT NULL REFERENCES room_photos(id) ON DELETE CASCADE,
     room_id            UUID NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
     status             visualizer_status NOT NULL DEFAULT 'pending',
@@ -264,7 +300,7 @@ CREATE TABLE ai_visualizer_runs (
 -- =============================================================================
 
 CREATE TABLE ghl_sync_jobs (
-    id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id  UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     sync_type        TEXT NOT NULL,
     status           sync_status NOT NULL DEFAULT 'pending',
@@ -280,7 +316,7 @@ CREATE TABLE ghl_sync_jobs (
 -- =============================================================================
 
 CREATE TABLE webhook_events (
-    id             UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     source         TEXT NOT NULL,
     event_type     TEXT NOT NULL,
@@ -296,7 +332,7 @@ CREATE TABLE webhook_events (
 -- =============================================================================
 
 CREATE TABLE ghl_integration_settings (
-    id                   UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id                   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id      UUID NOT NULL UNIQUE REFERENCES organizations(id) ON DELETE CASCADE,
     is_active            BOOLEAN NOT NULL DEFAULT false,
     auth_type            TEXT NOT NULL,
@@ -319,7 +355,7 @@ CREATE TABLE ghl_integration_settings (
 -- =============================================================================
 
 CREATE TABLE audit_logs (
-    id             UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     user_id        UUID REFERENCES users(id) ON DELETE SET NULL,
     action         TEXT NOT NULL,
@@ -328,55 +364,6 @@ CREATE TABLE audit_logs (
     metadata       JSONB,
     ip_address     TEXT,
     created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
--- =============================================================================
--- MATERIALS_ORDERS
--- =============================================================================
-
-CREATE TYPE materials_order_status AS ENUM ('draft', 'ordered', 'partial', 'received', 'cancelled');
-
-CREATE TABLE materials_orders (
-    id                   UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    project_id           UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
-    estimate_id          UUID REFERENCES estimates(id) ON DELETE SET NULL,
-    version              INTEGER NOT NULL DEFAULT 1,
-    status               materials_order_status NOT NULL DEFAULT 'draft',
-    notes                TEXT,
-    supplier_name        TEXT,
-    order_date           DATE,
-    expected_delivery    DATE,
-    subtotal             NUMERIC NOT NULL DEFAULT 0,
-    tax_rate             NUMERIC NOT NULL DEFAULT 0,
-    tax_amount           NUMERIC NOT NULL DEFAULT 0,
-    total                NUMERIC NOT NULL DEFAULT 0,
-    created_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    created_by           UUID REFERENCES users(id),
-    updated_by           UUID REFERENCES users(id)
-);
-
--- =============================================================================
--- MATERIALS_ORDER_ITEMS
--- =============================================================================
-
-CREATE TABLE materials_order_items (
-    id                   UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    materials_order_id   UUID NOT NULL REFERENCES materials_orders(id) ON DELETE CASCADE,
-    category             TEXT NOT NULL,
-    description          TEXT NOT NULL,
-    supplier_part_number TEXT,
-    brand                TEXT,
-    quantity             NUMERIC NOT NULL DEFAULT 1,
-    unit                 TEXT NOT NULL,
-    unit_cost            NUMERIC NOT NULL DEFAULT 0,
-    total_cost           NUMERIC NOT NULL DEFAULT 0,
-    is_ordered           BOOLEAN NOT NULL DEFAULT false,
-    ordered_quantity     NUMERIC,
-    notes                TEXT,
-    sort_order           INTEGER NOT NULL DEFAULT 0,
-    created_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at           TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- =============================================================================
@@ -407,10 +394,6 @@ CREATE INDEX idx_webhook_events_organization_id ON webhook_events(organization_i
 CREATE INDEX idx_webhook_events_processed ON webhook_events(processed);
 CREATE INDEX idx_audit_logs_organization_id ON audit_logs(organization_id);
 CREATE INDEX idx_audit_logs_created_at ON audit_logs(created_at);
-CREATE INDEX idx_materials_orders_project_id ON materials_orders(project_id);
-CREATE INDEX idx_materials_orders_estimate_id ON materials_orders(estimate_id);
-CREATE INDEX idx_materials_orders_status ON materials_orders(status);
-CREATE INDEX idx_materials_order_items_materials_order_id ON materials_order_items(materials_order_id);
 
 -- =============================================================================
 -- TRIGGERS — updated_at
@@ -434,8 +417,6 @@ CREATE TRIGGER estimates_updated_at          BEFORE UPDATE ON estimates         
 CREATE TRIGGER estimate_items_updated_at    BEFORE UPDATE ON estimate_items              FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 CREATE TRIGGER project_files_updated_at      BEFORE UPDATE ON project_files              FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 CREATE TRIGGER ghl_integration_settings_updated_at BEFORE UPDATE ON ghl_integration_settings FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-CREATE TRIGGER materials_orders_updated_at BEFORE UPDATE ON materials_orders FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-CREATE TRIGGER materials_order_items_updated_at BEFORE UPDATE ON materials_order_items FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 -- =============================================================================
 -- HELPER FUNCTION — get user's organization_id
@@ -880,77 +861,6 @@ CREATE POLICY "Service role can insert audit logs"
                 OR auth.jwt() ->> 'role' = 'service_role');
 
 -- =============================================================================
--- RLS POLICIES — materials_orders
--- =============================================================================
-
-ALTER TABLE materials_orders              ENABLE ROW LEVEL SECURITY;
-ALTER TABLE materials_order_items         ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Members can view materials orders in their projects"
-    ON materials_orders FOR SELECT
-    USING (project_id IN (
-        SELECT id FROM projects
-        WHERE organization_id = get_user_organization_id(auth.uid())
-    ));
-
-CREATE POLICY "Members can insert materials orders"
-    ON materials_orders FOR INSERT
-    WITH CHECK (project_id IN (
-        SELECT id FROM projects
-        WHERE organization_id = get_user_organization_id(auth.uid())
-    ) AND EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role IN ('owner', 'admin', 'member')));
-
-CREATE POLICY "Members can update materials orders"
-    ON materials_orders FOR UPDATE
-    USING (project_id IN (
-        SELECT id FROM projects
-        WHERE organization_id = get_user_organization_id(auth.uid())
-    ) AND EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role IN ('owner', 'admin', 'member')));
-
-CREATE POLICY "Admins/owners can delete materials orders"
-    ON materials_orders FOR DELETE
-    USING (project_id IN (
-        SELECT id FROM projects
-        WHERE organization_id = get_user_organization_id(auth.uid())
-    ) AND EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role IN ('owner', 'admin')));
-
--- =============================================================================
--- RLS POLICIES — materials_order_items
--- =============================================================================
-
-CREATE POLICY "Members can view materials order items"
-    ON materials_order_items FOR SELECT
-    USING (materials_order_id IN (
-        SELECT mo.id FROM materials_orders mo
-        JOIN projects p ON mo.project_id = p.id
-        WHERE p.organization_id = get_user_organization_id(auth.uid())
-    ));
-
-CREATE POLICY "Members can insert materials order items"
-    ON materials_order_items FOR INSERT
-    WITH CHECK (materials_order_id IN (
-        SELECT mo.id FROM materials_orders mo
-        JOIN projects p ON mo.project_id = p.id
-        WHERE p.organization_id = get_user_organization_id(auth.uid())
-    ) AND EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role IN ('owner', 'admin', 'member')));
-
-CREATE POLICY "Members can update materials order items"
-    ON materials_order_items FOR UPDATE
-    USING (materials_order_id IN (
-        SELECT mo.id FROM materials_orders mo
-        JOIN projects p ON mo.project_id = p.id
-        WHERE p.organization_id = get_user_organization_id(auth.uid())
-    ) AND EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role IN ('owner', 'admin', 'member')));
-
-CREATE POLICY "Members can delete materials order items"
-    ON materials_order_items FOR DELETE
-    USING (materials_order_id IN (
-        SELECT mo.id FROM materials_orders mo
-        JOIN projects p ON mo.project_id = p.id
-        WHERE p.organization_id = get_user_organization_id(auth.uid())
-    ) AND EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role IN ('owner', 'admin', 'member')));
-
--- =============================================================================
 -- STORAGE BUCKETS (run separately in SQL Editor or via API)
 -- =============================================================================
 
@@ -974,6 +884,22 @@ CREATE OR REPLACE FUNCTION storage_org_path_match(storage_path TEXT, requesting_
 RETURNS BOOLEAN AS $$
     SELECT storage_path LIKE get_org_storage_prefix(requesting_user_id) || '%';
 $$ LANGUAGE sql SECURITY DEFINER STABLE;
+
+-- Drop existing storage policies (Supabase has defaults)
+DROP POLICY IF EXISTS "Users can upload room photos within their org" ON storage.objects;
+DROP POLICY IF EXISTS "Users can view room photos within their org" ON storage.objects;
+DROP POLICY IF EXISTS "Users can update room photos within their org" ON storage.objects;
+DROP POLICY IF EXISTS "Users can delete room photos within their org" ON storage.objects;
+DROP POLICY IF EXISTS "Users can upload project files within their org" ON storage.objects;
+DROP POLICY IF EXISTS "Users can view project files within their org" ON storage.objects;
+DROP POLICY IF EXISTS "Users can update project files within their org" ON storage.objects;
+DROP POLICY IF EXISTS "Users can delete project files within their org" ON storage.objects;
+DROP POLICY IF EXISTS "Users can upload generated PDFs within their org" ON storage.objects;
+DROP POLICY IF EXISTS "Users can view generated PDFs within their org" ON storage.objects;
+DROP POLICY IF EXISTS "Users can delete generated PDFs within their org" ON storage.objects;
+DROP POLICY IF EXISTS "Users can upload visualizer outputs within their org" ON storage.objects;
+DROP POLICY IF EXISTS "Users can view visualizer outputs within their org" ON storage.objects;
+DROP POLICY IF EXISTS "Users can delete visualizer outputs within their org" ON storage.objects;
 
 -- room-photos
 CREATE POLICY "Users can upload room photos within their org"
@@ -1163,7 +1089,6 @@ GRANT USAGE ON TYPE processing_status TO anon, authenticated, service_role;
 GRANT USAGE ON TYPE job_status TO anon, authenticated, service_role;
 GRANT USAGE ON TYPE visualizer_status TO anon, authenticated, service_role;
 GRANT USAGE ON TYPE sync_status TO anon, authenticated, service_role;
-GRANT USAGE ON TYPE materials_order_status TO anon, authenticated, service_role;
 
 -- Grant all table permissions to authenticated users
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO authenticated;

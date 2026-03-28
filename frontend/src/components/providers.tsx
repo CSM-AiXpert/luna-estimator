@@ -81,6 +81,7 @@ export function Providers({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function loadSession() {
       try {
+        if (!supabase) return
         const { data: { session } } = await supabase.auth.getSession()
         if (session?.user) {
           // Fetch user profile
@@ -90,13 +91,14 @@ export function Providers({ children }: { children: ReactNode }) {
             .eq("id", session.user.id)
             .maybeSingle()
           if (profile) {
-            setUser(profile as User)
+            const userProfile = profile as User
+            setUser(userProfile)
             // Fetch org
-            if (profile.organization_id) {
+            if (userProfile.organization_id) {
               const { data: org } = await supabase
                 .from("organizations")
                 .select("*")
-                .eq("id", profile.organization_id)
+                .eq("id", userProfile.organization_id)
                 .maybeSingle()
               if (org) setOrganization(org as Organization)
             }

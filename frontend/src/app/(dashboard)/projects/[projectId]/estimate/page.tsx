@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ChevronDown, ChevronRight, DollarSign, Send, Check, FileDown, Loader2, Ruler, Link2 } from "lucide-react"
+import { ChevronDown, ChevronRight, DollarSign, Send, Check, FileDown, Loader2, Ruler, Link2, Package } from "lucide-react"
 import { formatCurrency, formatDate } from "@/lib/utils"
 
 export default function EstimatePage({
@@ -168,6 +168,12 @@ function EstimatePageInner({ projectId }: { projectId: string }) {
                 <FileDown className="h-3 w-3" />
                 Export PDF
               </Button>
+              <Link href={`/projects/${projectId}/materials-order`}>
+                <Button variant="secondary" size="sm">
+                  <Package className="h-3 w-3" />
+                  Materials Order
+                </Button>
+              </Link>
             </>
           )}
         </div>

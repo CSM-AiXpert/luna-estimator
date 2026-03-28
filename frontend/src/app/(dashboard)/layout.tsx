@@ -12,9 +12,9 @@ export default function DashboardLayout({
   const { organization } = useOrganization()
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen" style={{ background: 'var(--bg-primary)' }}>
       <Sidebar user={user} organization={organization} />
-      <main className="flex-1 ml-64">
+      <main className="flex-1 ml-64 relative z-10">
         {children}
       </main>
     </div>

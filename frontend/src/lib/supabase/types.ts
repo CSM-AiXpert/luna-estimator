@@ -670,6 +670,116 @@ export interface Database {
           ip_address?: string | null
         }
       }
+      materials_orders: {
+        Row: {
+          id: string
+          project_id: string
+          estimate_id: string | null
+          version: number
+          status: "draft" | "ordered" | "partial" | "received" | "cancelled"
+          notes: string | null
+          supplier_name: string | null
+          order_date: string | null
+          expected_delivery: string | null
+          subtotal: number
+          tax_rate: number
+          tax_amount: number
+          total: number
+          created_at: string
+          updated_at: string
+          created_by: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          estimate_id?: string | null
+          version?: number
+          status?: "draft" | "ordered" | "partial" | "received" | "cancelled"
+          notes?: string | null
+          supplier_name?: string | null
+          order_date?: string | null
+          expected_delivery?: string | null
+          subtotal?: number
+          tax_rate?: number
+          tax_amount?: number
+          total?: number
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          project_id?: string
+          estimate_id?: string | null
+          version?: number
+          status?: "draft" | "ordered" | "partial" | "received" | "cancelled"
+          notes?: string | null
+          supplier_name?: string | null
+          order_date?: string | null
+          expected_delivery?: string | null
+          subtotal?: number
+          tax_rate?: number
+          tax_amount?: number
+          total?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+      }
+      materials_order_items: {
+        Row: {
+          id: string
+          materials_order_id: string
+          category: string
+          description: string
+          supplier_part_number: string | null
+          brand: string | null
+          quantity: number
+          unit: string
+          unit_cost: number
+          total_cost: number
+          is_ordered: boolean
+          ordered_quantity: number | null
+          notes: string | null
+          sort_order: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          materials_order_id: string
+          category?: string
+          description: string
+          supplier_part_number?: string | null
+          brand?: string | null
+          quantity?: number
+          unit?: string
+          unit_cost?: number
+          total_cost?: number
+          is_ordered?: boolean
+          ordered_quantity?: number | null
+          notes?: string | null
+          sort_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          materials_order_id?: string
+          category?: string
+          description?: string
+          supplier_part_number?: string | null
+          brand?: string | null
+          quantity?: number
+          unit?: string
+          unit_cost?: number
+          total_cost?: number
+          is_ordered?: boolean
+          ordered_quantity?: number | null
+          notes?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+      }
     }
     Views: {}
     Functions: {}
@@ -703,3 +813,5 @@ export type ProcessingJob = Database["public"]["Tables"]["processing_jobs"]["Row
 export type AIVisualizerRun = Database["public"]["Tables"]["ai_visualizer_runs"]["Row"]
 export type GhLIntegrationSettings = Database["public"]["Tables"]["ghl_integration_settings"]["Row"]
 export type AuditLog = Database["public"]["Tables"]["audit_logs"]["Row"]
+export type MaterialsOrder = Database["public"]["Tables"]["materials_orders"]["Row"] & { items?: MaterialsOrderItem[] }
+export type MaterialsOrderItem = Database["public"]["Tables"]["materials_order_items"]["Row"]

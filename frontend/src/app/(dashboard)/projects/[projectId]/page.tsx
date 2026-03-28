@@ -36,6 +36,7 @@ import {
   XCircle,
   Clock,
   Home,
+  Package,
 } from "lucide-react"
 import { formatCurrency, formatDate } from "@/lib/utils"
 
@@ -141,6 +142,12 @@ function ProjectDetailInner({
           <Button variant="secondary">
             <DollarSign className="h-4 w-4" />
             View Estimate
+          </Button>
+        </Link>
+        <Link href={`/projects/${projectId}/materials-order`}>
+          <Button variant="secondary">
+            <Package className="h-4 w-4" />
+            Materials Order
           </Button>
         </Link>
       </div>
