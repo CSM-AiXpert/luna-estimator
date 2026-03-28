@@ -10,6 +10,7 @@ import {
   LogOut,
   Building2,
   ChevronDown,
+  Ruler,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -31,6 +32,7 @@ const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/customers", label: "Customers", icon: Users },
   { href: "/projects", label: "Projects", icon: FolderKanban },
+  { href: "/takeoff", label: "Takeoff", icon: Ruler },
   { href: "/settings", label: "Settings", icon: Settings },
 ]
 
@@ -44,12 +46,11 @@ export function Sidebar({ user, organization }: SidebarProps) {
 
   return (
     <aside
-      className="fixed left-0 top-0 z-40 h-screen flex flex-col"
+      className="h-screen flex flex-col"
       style={{
-        width: '260px',
-        background: 'linear-gradient(180deg, rgba(10,14,26,0.98) 0%, rgba(6,11,31,0.98) 100%)',
+        width: '220px',
+        background: '#10111d',
         borderRight: '1px solid rgba(255,255,255,0.06)',
-        boxShadow: '4px 0 24px rgba(0,0,0,0.4)',
       }}
     >
       {/* Logo */}
@@ -63,11 +64,13 @@ export function Sidebar({ user, organization }: SidebarProps) {
           style={{
             width: '36px',
             height: '36px',
-            background: 'linear-gradient(135deg, #00d4ff 0%, #3b82f6 100%)',
-            boxShadow: '0 4px 16px rgba(0,212,255,0.3), 0 0 0 1px rgba(0,212,255,0.2) inset',
+            background: '#e2b24a',
+            boxShadow: '0 2px 8px rgba(226,178,74,0.3)',
           }}
         >
-          <Building2 className="h-4 w-4 text-white" />
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M12 3C7.5 3 3.5 7 3.5 12C3.5 17 7.5 21 12.5 21C14 21 15.5 20.5 16.5 19.5C14.5 18.5 13 16.5 13 14.5C13 12 15 10 17.5 10.5C18 7 15 3 12 3Z" fill="#0f111e"/>
+          </svg>
         </div>
         <div>
           <div
@@ -78,7 +81,7 @@ export function Sidebar({ user, organization }: SidebarProps) {
           </div>
           <div
             className="uppercase tracking-widest"
-            style={{ fontSize: '9px', color: 'rgba(0,212,255,0.6)', letterSpacing: '0.15em' }}
+            style={{ fontSize: '9px', color: '#e2b24a', letterSpacing: '0.15em' }}
           >
             Estimator
           </div>
@@ -161,9 +164,8 @@ export function Sidebar({ user, organization }: SidebarProps) {
               style={
                 active
                   ? {
-                      background: 'linear-gradient(135deg, rgba(0,212,255,0.12) 0%, rgba(59,130,246,0.08) 100%)',
-                      border: '1px solid rgba(0,212,255,0.2)',
-                      boxShadow: '0 0 16px rgba(0,212,255,0.06)',
+                      background: 'rgba(226,178,74,0.12)',
+                      border: '1px solid rgba(226,178,74,0.2)',
                       color: 'var(--text-primary)',
                     }
                   : {
@@ -187,7 +189,7 @@ export function Sidebar({ user, organization }: SidebarProps) {
             >
               <Icon
                 className="h-4 w-4 flex-shrink-0"
-                style={active ? { color: 'var(--accent-cyan)' } : {}}
+                style={active ? { color: '#e2b24a' } : {}}
               />
               <span
                 style={{
@@ -205,8 +207,8 @@ export function Sidebar({ user, organization }: SidebarProps) {
                     width: '5px',
                     height: '5px',
                     borderRadius: '50%',
-                    background: 'var(--accent-cyan)',
-                    boxShadow: '0 0 6px var(--accent-cyan)',
+                    background: '#e2b24a',
+                    boxShadow: '0 0 6px #e2b24a',
                   }}
                 />
               )}
@@ -237,12 +239,11 @@ export function Sidebar({ user, organization }: SidebarProps) {
                 style={{
                   width: '34px',
                   height: '34px',
-                  background: 'linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%)',
+                  background: '#2b354c',
                   fontSize: '12px',
                   fontWeight: 700,
-                  color: '#fff',
+                  color: '#f0f4ff',
                   fontFamily: 'var(--font-display)',
-                  boxShadow: '0 2px 12px rgba(0,212,255,0.2)',
                 }}
               >
                 {user?.full_name

@@ -6,8 +6,7 @@ import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { Building2, Loader2, Eye, EyeOff, ArrowRight, Zap } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Loader2, Eye, EyeOff, ArrowRight, Mail } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { getSupabaseClient } from "@/lib/supabase/client"
@@ -49,116 +48,69 @@ export default function LoginPage() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center relative overflow-hidden"
-      style={{ background: 'var(--bg-void)' }}
+      className="min-h-screen flex items-center justify-center"
+      style={{ background: '#0f111e' }}
     >
-      {/* Animated mesh background */}
-      <div className="bg-mesh">
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: `
-              radial-gradient(ellipse 700px 700px at 20% 20%, rgba(0,212,255,0.07) 0%, transparent 60%),
-              radial-gradient(ellipse 500px 500px at 80% 80%, rgba(124,58,237,0.06) 0%, transparent 60%),
-              radial-gradient(ellipse 400px 400px at 50% 50%, rgba(59,130,246,0.04) 0%, transparent 70%)
-            `,
-          }}
-        />
-        <div className="bg-mesh-grid" />
-      </div>
+      {/* Subtle background gradient */}
+      <div style={{
+        position: 'fixed', inset: 0, pointerEvents: 'none',
+        background: 'radial-gradient(ellipse 600px 600px at 30% 30%, rgba(226,178,74,0.04) 0%, transparent 60%)',
+      }} />
 
       <div className="relative z-10 w-full max-w-md px-4">
         {/* Header */}
-        <div className="text-center mb-8 animate-fade-up">
-          {/* Mark */}
-          <div
-            className="inline-flex items-center justify-center mb-6"
-            style={{
-              width: '64px',
-              height: '64px',
-              borderRadius: '18px',
-              background: 'linear-gradient(135deg, rgba(0,212,255,0.15) 0%, rgba(59,130,246,0.1) 100%)',
-              border: '1px solid rgba(0,212,255,0.25)',
-              boxShadow: '0 8px 32px rgba(0,212,255,0.15), inset 0 1px 0 rgba(255,255,255,0.05)',
-            }}
-          >
-            <Building2 className="h-7 w-7" style={{ color: 'var(--accent-cyan)' }} />
-          </div>
-
-          {/* Wordmark */}
-          <div>
+        <div className="text-center mb-8">
+          {/* Luna mark + wordmark */}
+          <div className="inline-flex items-center gap-3 mb-6">
             <div
-              className="font-bold tracking-tight"
-              style={{ fontFamily: 'var(--font-display)', fontSize: '28px', letterSpacing: '-0.03em', color: 'var(--text-primary)' }}
+              className="flex items-center justify-center rounded-xl"
+              style={{ width: '52px', height: '52px', background: '#e2b24a', boxShadow: '0 4px 16px rgba(226,178,74,0.3)' }}
             >
-              LUNA
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                <path d="M12 3C7.5 3 3.5 7 3.5 12C3.5 17 7.5 21 12.5 21C14 21 15.5 20.5 16.5 19.5C14.5 18.5 13 16.5 13 14.5C13 12 15 10 17.5 10.5C18 7 15 3 12 3Z" fill="#0f111e"/>
+              </svg>
             </div>
-            <div
-              className="uppercase tracking-widest"
-              style={{ fontSize: '10px', color: 'rgba(0,212,255,0.6)', letterSpacing: '0.2em', marginTop: '2px' }}
-            >
-              Estimator Platform
+            <div className="text-left">
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 800, letterSpacing: '-0.02em', color: '#f0f4ff', lineHeight: 1 }}>LUNA</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '9px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.18em', color: '#e2b24a', marginTop: '3px' }}>Estimator</div>
             </div>
           </div>
-
-          {/* Tagline */}
-          <p
-            className="mt-4"
-            style={{ fontSize: '14px', color: 'var(--text-muted)', fontFamily: 'var(--font-body)' }}
-          >
+          <p style={{ fontSize: '14px', color: 'rgba(240,244,255,0.4)', fontFamily: 'var(--font-body)' }}>
             Professional drywall & paint estimation
           </p>
         </div>
 
         {/* Card */}
         <div
-          className="glass animate-fade-up"
-          style={{ animationDelay: '0.1s', animationFillMode: 'both' }}
+          className="card animate-fade-up"
+          style={{ animationDelay: '0.08s', animationFillMode: 'both', overflow: 'hidden' }}
         >
-          {/* Card top accent line */}
-          <div
-            style={{
-              height: '2px',
-              borderRadius: '18px 18px 0 0',
-              background: 'linear-gradient(90deg, transparent, rgba(0,212,255,0.5), rgba(124,58,237,0.5), transparent)',
-            }}
-          />
+          {/* Top accent line */}
+          <div style={{ height: '2px', background: 'linear-gradient(90deg, transparent, #e2b24a60, transparent)' }} />
 
-          <div className="px-7 py-6">
+          <div style={{ padding: '28px 32px' }}>
             <div className="mb-6">
-              <h2
-                className="font-bold"
-                style={{ fontFamily: 'var(--font-display)', fontSize: '18px', color: 'var(--text-primary)', marginBottom: '4px' }}
-              >
+              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 700, color: '#f0f4ff', marginBottom: '4px' }}>
                 Sign in to your account
               </h2>
-              <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+              <p style={{ fontSize: '13px', color: 'rgba(240,244,255,0.4)' }}>
                 Enter your credentials to continue
               </p>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {error && (
-                <div
-                  style={{
-                    padding: '0.75rem',
-                    borderRadius: 'var(--radius)',
-                    background: 'rgba(239,68,68,0.08)',
-                    border: '1px solid rgba(239,68,68,0.2)',
-                    fontSize: '13px',
-                    color: 'rgba(239,68,68,0.9)',
-                  }}
-                >
+                <div style={{
+                  padding: '10px 14px', borderRadius: '8px',
+                  background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)',
+                  fontSize: '13px', color: '#ef4444',
+                }}>
                   {error}
                 </div>
               )}
 
               <div className="space-y-1.5">
-                <Label
-                  htmlFor="email"
-                  style={{ fontSize: '12px', fontFamily: 'var(--font-display)', fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}
-                >
+                <Label htmlFor="email" style={{ fontSize: '11px', fontFamily: 'var(--font-display)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'rgba(240,244,255,0.5)' }}>
                   Email address
                 </Label>
                 <Input
@@ -170,25 +122,18 @@ export default function LoginPage() {
                   style={errors.email ? { borderColor: 'rgba(239,68,68,0.5)' } : {}}
                 />
                 {errors.email && (
-                  <p style={{ fontSize: '11px', color: 'rgba(239,68,68,0.8)', marginTop: '2px' }}>
-                    {errors.email.message}
-                  </p>
+                  <p style={{ fontSize: '11px', color: '#ef4444', marginTop: '3px' }}>{errors.email.message}</p>
                 )}
               </div>
 
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <Label
-                    htmlFor="password"
-                    style={{ fontSize: '12px', fontFamily: 'var(--font-display)', fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}
-                  >
+                  <Label htmlFor="password" style={{ fontSize: '11px', fontFamily: 'var(--font-display)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'rgba(240,244,255,0.5)' }}>
                     Password
                   </Label>
-                  <Link
-                    href="/forgot-password"
-                    style={{ fontSize: '12px', color: 'var(--accent-cyan)', opacity: 0.8, transition: 'opacity 0.15s' }}
-                    onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-                    onMouseLeave={e => (e.currentTarget.style.opacity = '0.8')}
+                  <Link href="/forgot-password" style={{ fontSize: '12px', color: '#e2b24a', opacity: 0.85, transition: 'opacity 0.15s' }}
+                    onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+                    onMouseLeave={e => e.currentTarget.style.opacity = '0.85'}
                   >
                     Forgot password?
                   </Link>
@@ -205,105 +150,60 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    style={{
-                      position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)',
-                      background: 'none', border: 'none', cursor: 'pointer',
-                      color: 'var(--text-disabled)', transition: 'color 0.15s',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-muted)')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-disabled)')}
+                    style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(240,244,255,0.25)', transition: 'color 0.15s' }}
+                    onMouseEnter={e => e.currentTarget.style.color = 'rgba(240,244,255,0.5)'}
+                    onMouseLeave={e => e.currentTarget.style.color = 'rgba(240,244,255,0.25)'}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
                 {errors.password && (
-                  <p style={{ fontSize: '11px', color: 'rgba(239,68,68,0.8)', marginTop: '2px' }}>
-                    {errors.password.message}
-                  </p>
+                  <p style={{ fontSize: '11px', color: '#ef4444', marginTop: '3px' }}>{errors.password.message}</p>
                 )}
               </div>
 
               <button
                 type="submit"
                 className="btn-primary w-full"
-                style={{
-                  height: '44px',
-                  fontSize: '14px',
-                  borderRadius: 'var(--radius)',
-                  justifyContent: 'center',
-                  marginTop: '8px',
-                  opacity: isLoading ? 0.7 : 1,
-                }}
+                style={{ height: '44px', justifyContent: 'center', marginTop: '8px', fontSize: '14px', gap: '8px' }}
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Signing in…</span>
-                  </>
+                  <><Loader2 className="h-4 w-4 animate-spin" /> Signing in…</>
                 ) : (
-                  <>
-                    <span>Sign in</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </>
+                  <><span>Sign in</span><ArrowRight className="h-4 w-4" /></>
                 )}
               </button>
             </form>
 
             {/* Divider */}
             <div style={{ position: 'relative', margin: '20px 0' }}>
-              <div style={{ position: 'absolute', inset: '50% auto auto auto', width: '100%', height: '1px', background: 'rgba(255,255,255,0.05)', transform: 'translateY(-50%)' }} />
-              <div
-                className="inline-flex items-center justify-center"
-                style={{
-                  position: 'relative',
-                  width: '28px',
-                  height: '28px',
-                  borderRadius: '50%',
-                  background: 'var(--bg-surface)',
-                  border: '1px solid rgba(255,255,255,0.06)',
-                  margin: '0 auto',
-                  display: 'flex',
-                }}
-              >
-                <Zap className="h-3 w-3" style={{ color: 'var(--text-disabled)' }} />
+              <div style={{ position: 'absolute', inset: '50% auto auto auto', width: '100%', height: '1px', background: 'rgba(255,255,255,0.06)', transform: 'translateY(-50%)' }} />
+              <div style={{ position: 'relative', width: '28px', height: '28px', borderRadius: '50%', background: '#1a1d2c', border: '1px solid rgba(255,255,255,0.06)', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Mail className="h-3 w-3" style={{ color: 'rgba(240,244,255,0.2)' }} />
               </div>
             </div>
 
             {/* Magic link */}
             <Link href="/magic-link" style={{ display: 'block' }}>
-              <button
-                type="button"
-                className="btn-secondary w-full"
-                style={{ height: '44px', justifyContent: 'center', fontSize: '14px' }}
-              >
+              <button type="button" className="btn-secondary w-full" style={{ height: '44px', justifyContent: 'center', fontSize: '14px' }}>
                 Continue with Magic Link
               </button>
             </Link>
           </div>
 
-          {/* Card bottom */}
-          <div
-            className="px-7 py-4 text-center"
-            style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
-          >
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-              No account yet?{" "}
-              <Link
-                href="/signup"
-                style={{ color: 'var(--accent-cyan)', fontWeight: 500, fontFamily: 'var(--font-display)' }}
-              >
+          {/* Card footer */}
+          <div style={{ padding: '14px 32px', borderTop: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
+            <p style={{ fontSize: '13px', color: 'rgba(240,244,255,0.4)' }}>
+              No account yet?{' '}
+              <Link href="/signup" style={{ color: '#e2b24a', fontWeight: 600, fontFamily: 'var(--font-display)' }}>
                 Create one
               </Link>
             </p>
           </div>
         </div>
 
-        {/* Footer note */}
-        <p
-          className="text-center mt-6"
-          style={{ fontSize: '11px', color: 'rgba(240,244,255,0.2)' }}
-        >
+        <p style={{ textAlign: 'center', fontSize: '11px', color: 'rgba(240,244,255,0.15)', marginTop: '24px' }}>
           Coastal Solutions Media · lunaestimator.com
         </p>
       </div>

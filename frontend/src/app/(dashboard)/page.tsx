@@ -9,13 +9,12 @@ import {
   Plus,
   ArrowRight,
   Loader2,
-  Building2,
   Ruler,
   FileText,
   TrendingUp,
   Sparkles,
 } from "lucide-react"
-import { formatDate, formatCurrency } from "@/lib/utils"
+import { formatDate } from "@/lib/utils"
 import type { Project, Customer } from "@/lib/supabase/types"
 import {
   AreaChart,
@@ -33,7 +32,6 @@ interface ProjectWithCustomer extends Project {
   customer?: { name: string; email: string }
 }
 
-// Sample pipeline data for chart (would come from GHL in production)
 const pipelineData = [
   { month: "Jan", value: 42 },
   { month: "Feb", value: 58 },
@@ -47,7 +45,7 @@ const statusColors: Record<string, string> = {
   lead: "#f59e0b",
   bid: "#3b82f6",
   active: "#10b981",
-  completed: "#00d4ff",
+  completed: "#e2b24a",
   cancelled: "#6b7280",
 }
 
@@ -81,7 +79,7 @@ export default function DashboardPage() {
     { name: "Active", value: activeCount, color: "#10b981" },
     { name: "Bid", value: bidCount, color: "#3b82f6" },
     { name: "Lead", value: leadCount, color: "#f59e0b" },
-    { name: "Completed", value: completedCount, color: "#00d4ff" },
+    { name: "Completed", value: completedCount, color: "#e2b24a" },
   ].filter((d) => d.value > 0)
 
   const recentProjects = projects?.slice(0, 6) ?? []
@@ -109,9 +107,9 @@ export default function DashboardPage() {
       title: "Total Customers",
       value: customers?.length ?? 0,
       icon: Users,
-      color: "#00d4ff",
-      gradient: "linear-gradient(135deg, rgba(0,212,255,0.12), rgba(0,212,255,0.04))",
-      border: "rgba(0,212,255,0.2)",
+      color: "#e2b24a",
+      gradient: "linear-gradient(135deg, rgba(226,178,74,0.15), rgba(226,178,74,0.04))",
+      border: "rgba(226,178,74,0.2)",
       description: "In your roster",
     },
     {
@@ -126,35 +124,35 @@ export default function DashboardPage() {
   ]
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
+    <div className="min-h-screen" style={{ background: "var(--bg-primary)" }}>
       {/* Sticky header */}
       <header
         className="sticky top-0 z-30"
         style={{
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
-          background: 'rgba(10,14,26,0.85)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)',
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          background: "rgba(15,17,30,0.9)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
         }}
       >
         <div
           className="flex items-center justify-between px-8"
-          style={{ height: '68px' }}
+          style={{ height: "68px" }}
         >
           <div>
             <h1
               className="font-bold"
-              style={{ fontFamily: 'var(--font-display)', fontSize: '18px', letterSpacing: '-0.02em', color: 'var(--text-primary)' }}
+              style={{ fontFamily: "var(--font-display)", fontSize: "18px", letterSpacing: "-0.02em", color: "var(--text-primary)" }}
             >
               Dashboard
             </h1>
-            <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '1px' }}>
-              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+            <p style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "1px" }}>
+              {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
             </p>
           </div>
           <div className="flex items-center gap-3">
             <Link href="/projects/new">
-              <button className="btn-primary" style={{ height: '36px', padding: '0 16px', fontSize: '13px' }}>
+              <button className="btn-primary" style={{ height: "36px", padding: "0 16px", fontSize: "13px" }}>
                 <Plus className="h-3.5 w-3.5" />
                 New Project
               </button>
@@ -164,72 +162,71 @@ export default function DashboardPage() {
       </header>
 
       <div className="p-8 space-y-8">
-        {/* Animated stat cards */}
+        {/* Stat cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 stagger-children">
           {statCards.map((stat) => {
             const Icon = stat.icon
             return (
               <div
                 key={stat.title}
-                className="glass glass-hover stat-card"
+                className="card card-hover stat-card"
                 style={{
-                  padding: '20px',
+                  padding: "20px",
                   background: stat.gradient,
                   borderColor: stat.border,
-                  position: 'relative',
-                  overflow: 'hidden',
+                  position: "relative",
+                  overflow: "hidden",
                 }}
               >
-                {/* Top accent line */}
                 <div
                   style={{
-                    position: 'absolute',
+                    position: "absolute",
                     top: 0,
                     left: 0,
                     right: 0,
-                    height: '2px',
+                    height: "2px",
                     background: `linear-gradient(90deg, transparent, ${stat.color}80, transparent)`,
                   }}
                 />
                 <div className="flex items-start justify-between">
                   <div>
                     <p
-                      style={{ fontSize: '11px', fontFamily: 'var(--font-display)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}
+                      style={{ fontSize: "11px", fontFamily: "var(--font-display)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-muted)" }}
                     >
                       {stat.title}
                     </p>
                     <p
                       className="font-bold"
                       style={{
-                        fontFamily: 'var(--font-display)',
-                        fontSize: '32px',
+                        fontFamily: "var(--font-display)",
+                        fontSize: "32px",
                         fontWeight: 800,
-                        letterSpacing: '-0.03em',
-                        color: 'var(--text-primary)',
-                        marginTop: '6px',
+                        letterSpacing: "-0.03em",
+                        color: "var(--text-primary)",
+                        marginTop: "6px",
                         lineHeight: 1,
                       }}
                     >
                       {isLoading ? (
-                        <span className="skeleton" style={{ display: 'inline-block', width: '48px', height: '32px', borderRadius: '6px' }} />
+                        <span className="skeleton" style={{ display: "inline-block", width: "48px", height: "32px", borderRadius: "6px" }} />
                       ) : (
                         stat.value
                       )}
                     </p>
-                    <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                    <p style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "4px" }}>
                       {stat.description}
                     </p>
                   </div>
                   <div
                     style={{
-                      width: '44px',
-                      height: '44px',
-                      borderRadius: '12px',
+                      width: "44px",
+                      height: "44px",
+                      borderRadius: "12px",
                       background: `${stat.color}15`,
                       border: `1px solid ${stat.color}25`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
                     <Icon className="h-5 w-5" style={{ color: stat.color }} />
@@ -244,70 +241,67 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 stagger-children">
           {/* Pipeline trend chart */}
           <div
-            className="glass"
-            style={{ padding: '24px', gridColumn: 'span 2' }}
+            className="card"
+            style={{ padding: "24px", gridColumn: "span 2" }}
           >
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3
                   className="font-bold"
-                  style={{ fontFamily: 'var(--font-display)', fontSize: '15px', color: 'var(--text-primary)' }}
+                  style={{ fontFamily: "var(--font-display)", fontSize: "15px", color: "var(--text-primary)" }}
                 >
                   Project Pipeline
                 </h3>
-                <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                <p style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "2px" }}>
                   Active projects over time
                 </p>
               </div>
-              <div
-                className="badge badge-cyan"
-                style={{ fontSize: '11px' }}
-              >
+              <div className="badge badge-gold" style={{ fontSize: "11px" }}>
                 <TrendingUp className="h-3 w-3" />
                 +18% this month
               </div>
             </div>
-            <div style={{ height: '180px' }}>
+            <div style={{ height: "180px" }}>
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={pipelineData}>
                   <defs>
                     <linearGradient id="pipelineGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#00d4ff" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#00d4ff" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#e2b24a" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#e2b24a" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis
                     dataKey="month"
-                    tick={{ fill: 'rgba(240,244,255,0.4)', fontSize: 11, fontFamily: 'var(--font-display)' }}
+                    tick={{ fill: "rgba(240,244,255,0.4)", fontSize: 11, fontFamily: "var(--font-display)" }}
                     axisLine={false}
                     tickLine={false}
                   />
                   <YAxis
-                    tick={{ fill: 'rgba(240,244,255,0.4)', fontSize: 11, fontFamily: 'var(--font-display)' }}
+                    tick={{ fill: "rgba(240,244,255,0.4)", fontSize: 11, fontFamily: "var(--font-display)" }}
                     axisLine={false}
                     tickLine={false}
                     width={28}
                   />
                   <Tooltip
                     contentStyle={{
-                      background: 'rgba(13,18,36,0.95)',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: '10px',
-                      fontSize: '13px',
-                      color: '#f0f4ff',
-                      fontFamily: 'var(--font-body)',
-                      boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                      background: "rgba(13,18,36,0.95)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: "10px",
+                      fontSize: "13px",
+                      color: "#f0f4ff",
+                      fontFamily: "var(--font-body)",
+                      boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
                     }}
-                    cursor={{ stroke: 'rgba(0,212,255,0.3)', strokeWidth: 1 }}
+                    cursor={{ stroke: "rgba(226,178,74,0.3)", strokeWidth: 1 }}
                   />
                   <Area
                     type="monotone"
                     dataKey="value"
-                    stroke="#00d4ff"
+                    stroke="#e2b24a"
                     strokeWidth={2}
                     fill="url(#pipelineGrad)"
                     dot={false}
-                    activeDot={{ r: 4, fill: '#00d4ff', strokeWidth: 0 }}
+                    activeDot={{ r: 4, fill: "#e2b24a", strokeWidth: 0 }}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -315,25 +309,25 @@ export default function DashboardPage() {
           </div>
 
           {/* Status breakdown */}
-          <div className="glass" style={{ padding: '24px' }}>
+          <div className="card" style={{ padding: "24px" }}>
             <h3
               className="font-bold mb-1"
-              style={{ fontFamily: 'var(--font-display)', fontSize: '15px', color: 'var(--text-primary)' }}
+              style={{ fontFamily: "var(--font-display)", fontSize: "15px", color: "var(--text-primary)" }}
             >
               Project Status
             </h3>
-            <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '20px' }}>
+            <p style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "20px" }}>
               Current distribution
             </p>
 
             {pieData.length === 0 ? (
               <div className="text-center py-8">
-                <FolderKanban className="h-10 w-10 mx-auto mb-2" style={{ color: 'var(--text-disabled)' }} />
-                <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>No projects yet</p>
+                <FolderKanban className="h-10 w-10 mx-auto mb-2" style={{ color: "var(--text-muted)" }} />
+                <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>No projects yet</p>
               </div>
             ) : (
               <>
-                <div style={{ height: '120px', position: 'relative' }}>
+                <div style={{ height: "120px", position: "relative" }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -357,10 +351,10 @@ export default function DashboardPage() {
                   {pieData.map((item) => (
                     <div key={item.name} className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: item.color }} />
-                        <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{item.name}</span>
+                        <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: item.color }} />
+                        <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>{item.name}</span>
                       </div>
-                      <span style={{ fontSize: '12px', fontFamily: 'var(--font-display)', fontWeight: 600, color: 'var(--text-primary)' }}>
+                      <span style={{ fontSize: "12px", fontFamily: "var(--font-display)", fontWeight: 600, color: "var(--text-primary)" }}>
                         {item.value}
                       </span>
                     </div>
@@ -374,21 +368,21 @@ export default function DashboardPage() {
         {/* Recent Projects + Quick Actions row */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 stagger-children">
           {/* Recent projects table */}
-          <div className="glass" style={{ padding: '24px', gridColumn: 'span 3' }}>
+          <div className="card" style={{ padding: "24px", gridColumn: "span 3" }}>
             <div className="flex items-center justify-between mb-5">
               <div>
                 <h3
                   className="font-bold"
-                  style={{ fontFamily: 'var(--font-display)', fontSize: '15px', color: 'var(--text-primary)' }}
+                  style={{ fontFamily: "var(--font-display)", fontSize: "15px", color: "var(--text-primary)" }}
                 >
                   Recent Projects
                 </h3>
-                <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                <p style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "2px" }}>
                   Latest activity across all projects
                 </p>
               </div>
-              <Link href="/projects" style={{ textDecoration: 'none' }}>
-                <button className="btn-ghost" style={{ fontSize: '12px' }}>
+              <Link href="/projects" style={{ textDecoration: "none" }}>
+                <button className="btn-ghost" style={{ fontSize: "12px" }}>
                   View all <ArrowRight className="h-3.5 w-3.5 ml-1" />
                 </button>
               </Link>
@@ -398,10 +392,10 @@ export default function DashboardPage() {
               <div className="space-y-3">
                 {[1, 2, 3].map((i) => (
                   <div key={i} className="flex items-center gap-4">
-                    <div className="skeleton" style={{ width: '40px', height: '40px', borderRadius: '10px' }} />
+                    <div className="skeleton" style={{ width: "40px", height: "40px", borderRadius: "10px" }} />
                     <div className="flex-1 space-y-2">
-                      <div className="skeleton" style={{ height: '14px', width: '60%', borderRadius: '4px' }} />
-                      <div className="skeleton" style={{ height: '12px', width: '40%', borderRadius: '4px' }} />
+                      <div className="skeleton" style={{ height: "14px", width: "60%", borderRadius: "4px" }} />
+                      <div className="skeleton" style={{ height: "12px", width: "40%", borderRadius: "4px" }} />
                     </div>
                   </div>
                 ))}
@@ -411,17 +405,17 @@ export default function DashboardPage() {
                 <div
                   className="inline-flex items-center justify-center mb-3"
                   style={{
-                    width: '56px', height: '56px', borderRadius: '16px',
-                    background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.1)',
+                    width: "56px", height: "56px", borderRadius: "16px",
+                    background: "rgba(226,178,74,0.06)", border: "1px solid rgba(226,178,74,0.1)",
                   }}
                 >
-                  <FolderKanban className="h-6 w-6" style={{ color: 'var(--text-disabled)' }} />
+                  <FolderKanban className="h-6 w-6" style={{ color: "var(--text-muted)" }} />
                 </div>
-                <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '12px' }}>
+                <p style={{ fontSize: "14px", color: "var(--text-muted)", marginBottom: "12px" }}>
                   No projects created yet
                 </p>
-                <Link href="/projects/new" style={{ display: 'inline-block', textDecoration: 'none' }}>
-                  <button className="btn-primary" style={{ fontSize: '13px', height: '36px', padding: '0 16px' }}>
+                <Link href="/projects/new" style={{ display: "inline-block", textDecoration: "none" }}>
+                  <button className="btn-primary" style={{ fontSize: "13px", height: "36px", padding: "0 16px" }}>
                     <Plus className="h-3.5 w-3.5" />
                     Create first project
                   </button>
@@ -433,32 +427,32 @@ export default function DashboardPage() {
                   <Link
                     key={project.id}
                     href={`/projects/${project.id}`}
-                    style={{ textDecoration: 'none' }}
+                    style={{ textDecoration: "none" }}
                   >
                     <div
                       className="flex items-center gap-4 p-3 rounded-xl transition-all duration-200"
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: "pointer" }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
-                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'
+                        e.currentTarget.style.background = "rgba(255,255,255,0.04)"
+                        e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'transparent'
-                        e.currentTarget.style.borderColor = 'transparent'
+                        e.currentTarget.style.background = "transparent"
+                        e.currentTarget.style.borderColor = "transparent"
                       }}
                     >
                       {/* Icon */}
                       <div
                         style={{
-                          width: '40px', height: '40px', borderRadius: '10px', flexShrink: 0,
-                          background: `${statusColors[project.status] ?? '#6b7280'}15`,
-                          border: `1px solid ${statusColors[project.status] ?? '#6b7280'}25`,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          width: "40px", height: "40px", borderRadius: "10px", flexShrink: 0,
+                          background: `${statusColors[project.status] ?? "#6b7280"}15`,
+                          border: `1px solid ${statusColors[project.status] ?? "#6b7280"}25`,
+                          display: "flex", alignItems: "center", justifyContent: "center",
                         }}
                       >
                         <FolderKanban
                           className="h-4.5 w-4.5"
-                          style={{ color: statusColors[project.status] ?? '#6b7280' }}
+                          style={{ color: statusColors[project.status] ?? "#6b7280" }}
                         />
                       </div>
 
@@ -466,15 +460,15 @@ export default function DashboardPage() {
                       <div className="flex-1 min-w-0">
                         <p
                           className="font-semibold truncate"
-                          style={{ fontFamily: 'var(--font-display)', fontSize: '13.5px', color: 'var(--text-primary)' }}
+                          style={{ fontFamily: "var(--font-display)", fontSize: "13.5px", color: "var(--text-primary)" }}
                         >
                           {project.name}
                         </p>
                         <p
                           className="truncate"
-                          style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '1px' }}
+                          style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "1px" }}
                         >
-                          {project.customer?.name ?? 'No customer'} · {project.city ?? ''}{project.state ? `, ${project.state}` : ''}
+                          {project.customer?.name ?? "No customer"} · {project.city ?? ""}{project.state ? `, ${project.state}` : ""}
                         </p>
                       </div>
 
@@ -483,20 +477,20 @@ export default function DashboardPage() {
                         <span
                           className="badge"
                           style={{
-                            fontSize: '10px',
-                            background: `${statusColors[project.status] ?? '#6b7280'}15`,
-                            color: statusColors[project.status] ?? '#6b7280',
-                            border: `1px solid ${statusColors[project.status] ?? '#6b7280'}25`,
-                            padding: '2px 8px',
-                            borderRadius: '99px',
-                            fontFamily: 'var(--font-display)',
+                            fontSize: "10px",
+                            background: `${statusColors[project.status] ?? "#6b7280"}15`,
+                            color: statusColors[project.status] ?? "#6b7280",
+                            border: `1px solid ${statusColors[project.status] ?? "#6b7280"}25`,
+                            padding: "2px 8px",
+                            borderRadius: "99px",
+                            fontFamily: "var(--font-display)",
                             fontWeight: 600,
-                            textTransform: 'capitalize',
+                            textTransform: "capitalize",
                           }}
                         >
                           {project.status}
                         </span>
-                        <span style={{ fontSize: '11px', color: 'var(--text-disabled)' }}>
+                        <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
                           {formatDate(project.created_at)}
                         </span>
                       </div>
@@ -508,54 +502,54 @@ export default function DashboardPage() {
           </div>
 
           {/* Quick actions */}
-          <div className="glass" style={{ padding: '24px', gridColumn: 'span 2' }}>
+          <div className="card" style={{ padding: "24px", gridColumn: "span 2" }}>
             <h3
               className="font-bold mb-1"
-              style={{ fontFamily: 'var(--font-display)', fontSize: '15px', color: 'var(--text-primary)' }}
+              style={{ fontFamily: "var(--font-display)", fontSize: "15px", color: "var(--text-primary)" }}
             >
               Quick Actions
             </h3>
-            <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '16px' }}>
+            <p style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "16px" }}>
               Common tasks at your fingertips
             </p>
 
             <div className="space-y-2">
               {[
-                { href: '/projects/new', icon: FolderKanban, label: 'New Project', sub: 'Start a fresh estimate', color: '#00d4ff' },
-                { href: '/customers/new', icon: Users, label: 'Add Customer', sub: 'Add to your roster', color: '#10b981' },
-                { href: '/projects', icon: FileText, label: 'All Projects', sub: 'Browse & manage', color: '#7c3aed' },
-                { href: '/settings/ghl', icon: Building2, label: 'GHL Setup', sub: 'Integrate your CRM', color: '#f59e0b' },
+                { href: "/projects/new", icon: FolderKanban, label: "New Project", sub: "Start a fresh estimate", color: "#e2b24a" },
+                { href: "/customers/new", icon: Users, label: "Add Customer", sub: "Add to your roster", color: "#10b981" },
+                { href: "/projects", icon: FileText, label: "All Projects", sub: "Browse & manage", color: "#7c3aed" },
+                { href: "/settings/ghl", icon: Ruler, label: "GHL Setup", sub: "Integrate your CRM", color: "#f59e0b" },
               ].map((action) => (
-                <Link key={action.href} href={action.href} style={{ textDecoration: 'none' }}>
+                <Link key={action.href} href={action.href} style={{ textDecoration: "none" }}>
                   <div
                     className="flex items-center gap-3 p-3 rounded-xl transition-all duration-200"
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: "pointer" }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+                      e.currentTarget.style.background = "rgba(255,255,255,0.04)"
                       e.currentTarget.style.borderColor = `${action.color}30`
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'transparent'
-                      e.currentTarget.style.borderColor = 'transparent'
+                      e.currentTarget.style.background = "transparent"
+                      e.currentTarget.style.borderColor = "transparent"
                     }}
                   >
                     <div
                       style={{
-                        width: '36px', height: '36px', borderRadius: '10px', flexShrink: 0,
+                        width: "36px", height: "36px", borderRadius: "10px", flexShrink: 0,
                         background: `${action.color}12`,
                         border: `1px solid ${action.color}20`,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        display: "flex", alignItems: "center", justifyContent: "center",
                       }}
                     >
                       <action.icon className="h-4 w-4" style={{ color: action.color }} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p style={{ fontSize: '13px', fontFamily: 'var(--font-display)', fontWeight: 600, color: 'var(--text-primary)' }}>
+                      <p style={{ fontSize: "13px", fontFamily: "var(--font-display)", fontWeight: 600, color: "var(--text-primary)" }}>
                         {action.label}
                       </p>
-                      <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{action.sub}</p>
+                      <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>{action.sub}</p>
                     </div>
-                    <ArrowRight className="h-3.5 w-3.5 flex-shrink-0" style={{ color: 'var(--text-disabled)' }} />
+                    <ArrowRight className="h-3.5 w-3.5 flex-shrink-0" style={{ color: "var(--text-muted)" }} />
                   </div>
                 </Link>
               ))}

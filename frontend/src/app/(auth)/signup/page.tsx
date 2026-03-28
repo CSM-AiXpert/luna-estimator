@@ -6,7 +6,7 @@ import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { Building2, Loader2, Mail } from "lucide-react"
+import { Loader2, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -48,7 +48,6 @@ export default function SignupPage() {
     setError(null)
 
     try {
-      // Create organization first
       const orgResponse = await fetch("/api/organizations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -63,8 +62,8 @@ export default function SignupPage() {
 
       if (data.useMagicLink) {
         const supabase = getSupabaseClient()
-    if (!supabase) { setError("Auth not available"); setIsLoading(false); return }
-    const { error } = await supabase.auth.signInWithOtp({
+        if (!supabase) { setError("Auth not available"); setIsLoading(false); return }
+        const { error } = await supabase.auth.signInWithOtp({
           email: data.email,
           options: {
             emailRedirectTo: `${window.location.origin}/auth/callback`,
@@ -82,8 +81,8 @@ export default function SignupPage() {
       }
 
       const supabase2 = getSupabaseClient()
-    if (!supabase2) { setError("Auth not available"); setIsLoading(false); return }
-    const { error: signUpError } = await supabase2.auth.signUp({
+      if (!supabase2) { setError("Auth not available"); setIsLoading(false); return }
+      const { error: signUpError } = await supabase2.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
@@ -107,18 +106,25 @@ export default function SignupPage() {
 
   if (magicLinkSent) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0e1a] px-4">
-        <Card className="max-w-md w-full border-white/10 bg-white/[0.03] backdrop-blur-xl">
-          <CardContent className="pt-6 text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#00d4ff]/10">
-              <Mail className="h-6 w-6 text-[#00d4ff]" />
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--bg-primary)" }}>
+        <Card className="card max-w-md w-full">
+          <CardContent className="pt-8 text-center space-y-5">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[rgba(226,178,74,0.1)] mx-auto">
+              <Mail className="h-8 w-8" style={{ color: "var(--accent-gold)" }} />
             </div>
-            <h2 className="text-xl font-semibold text-white mb-2">Check your email</h2>
-            <p className="text-white/50 text-sm">
-              We&apos;ve sent a magic link to your email. Click the link to sign in.
-            </p>
-            <Link href="/login" className="mt-4 block">
-              <Button variant="secondary" className="w-full">
+            <div>
+              <h2
+                className="text-2xl font-bold mb-2"
+                style={{ fontFamily: "var(--font-display)", color: "var(--text-primary)" }}
+              >
+                Check your email
+              </h2>
+              <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+                We&apos;ve sent a magic link to your email. Click the link to sign in.
+              </p>
+            </div>
+            <Link href="/login">
+              <Button variant="secondary" className="btn-secondary w-full">
                 Back to login
               </Button>
             </Link>
@@ -129,30 +135,44 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0e1a] px-4 py-8">
-      <div className="fixed inset-0 bg-gradient-to-br from-[#00d4ff]/5 via-transparent to-[#3b82f6]/5 pointer-events-none" />
+    <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--bg-primary)" }}>
 
-      <div className="relative w-full max-w-md">
-        <div className="flex justify-center mb-8">
+      <div className="w-full max-w-md px-4">
+        {/* Logo */}
+        <div className="flex justify-center mb-10 animate-fade-up">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#00d4ff] to-[#3b82f6]">
-              <Building2 className="h-6 w-6 text-white" />
+            <div
+              className="flex h-12 w-12 items-center justify-center rounded-xl"
+              style={{ background: "linear-gradient(135deg, var(--accent-gold), var(--accent-gold-bright))" }}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3C7.03 3 3 7.03 3 12C3 16.97 7.03 21 12 21C16.97 21 21 16.97 21 12C21 7.03 16.97 3 12 3Z" fill="#0f111e" />
+                <path d="M12 3C12 3 8 6 8 12C8 15 9 16 9 16C9 16 9.5 15.5 12 15C14.5 14.5 15 16 15 16C15 16 16 15 16 12C16 6 12 3 12 3Z" fill="#f0f4ff" />
+              </svg>
             </div>
             <div>
-              <div className="text-xl font-bold text-white tracking-tight">
+              <div
+                className="text-xl font-bold tracking-tight"
+                style={{ fontFamily: "var(--font-display)", color: "var(--text-primary)" }}
+              >
                 LUNA
               </div>
-              <div className="text-xs text-white/40 uppercase tracking-widest">
+              <div className="text-xs uppercase tracking-widest" style={{ color: "var(--accent-gold)" }}>
                 Estimator
               </div>
             </div>
           </div>
         </div>
 
-        <Card className="border-white/10 bg-white/[0.03] backdrop-blur-xl">
-          <CardHeader className="text-center pb-2">
-            <CardTitle className="text-xl">Create your account</CardTitle>
-            <CardDescription className="text-white/50">
+        <Card className="card animate-fade-up" style={{ animationDelay: "0.1s" }}>
+          <CardHeader className="text-center pb-4">
+            <CardTitle
+              className="text-xl"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              Create your account
+            </CardTitle>
+            <CardDescription>
               Start estimating projects with Luna AI
             </CardDescription>
           </CardHeader>
@@ -160,45 +180,52 @@ export default function SignupPage() {
           <CardContent className="space-y-4 pt-4">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {error && (
-                <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-400">
+                <div
+                  className="rounded-lg p-3 text-sm"
+                  style={{
+                    background: "var(--error-bg)",
+                    border: "1px solid rgba(239,68,68,0.2)",
+                    color: "var(--error)",
+                  }}
+                >
                   {error}
                 </div>
               )}
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="orgName">Organization Name</Label>
                 <Input
                   id="orgName"
                   placeholder="Acme Drywall"
                   {...register("orgName")}
-                  className={errors.orgName ? "border-red-500/50" : ""}
+                  className={`input ${errors.orgName ? "border-red-500/50" : ""}`}
                 />
                 {errors.orgName && (
                   <p className="text-xs text-red-400">{errors.orgName.message}</p>
                 )}
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="fullName">Full Name</Label>
                 <Input
                   id="fullName"
                   placeholder="John Smith"
                   {...register("fullName")}
-                  className={errors.fullName ? "border-red-500/50" : ""}
+                  className={`input ${errors.fullName ? "border-red-500/50" : ""}`}
                 />
                 {errors.fullName && (
                   <p className="text-xs text-red-400">{errors.fullName.message}</p>
                 )}
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="you@company.com"
                   {...register("email")}
-                  className={errors.email ? "border-red-500/50" : ""}
+                  className={`input ${errors.email ? "border-red-500/50" : ""}`}
                 />
                 {errors.email && (
                   <p className="text-xs text-red-400">{errors.email.message}</p>
@@ -206,14 +233,14 @@ export default function SignupPage() {
               </div>
 
               {!useMagicLink && (
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <Label htmlFor="password">Password</Label>
                   <Input
                     id="password"
                     type="password"
                     placeholder="••••••••"
                     {...register("password")}
-                    className={errors.password ? "border-red-500/50" : ""}
+                    className={`input ${errors.password ? "border-red-500/50" : ""}`}
                   />
                   {errors.password && (
                     <p className="text-xs text-red-400">{errors.password.message}</p>
@@ -223,7 +250,7 @@ export default function SignupPage() {
 
               <Button
                 type="submit"
-                className="w-full"
+                className="btn-primary w-full"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -239,10 +266,10 @@ export default function SignupPage() {
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-white/5" />
+                <span className="w-full border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }} />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-[#0d1224] px-2 text-white/30">
+                <span style={{ background: "var(--bg-card)", padding: "0 8px", color: "var(--text-muted)" }}>
                   Or
                 </span>
               </div>
@@ -251,9 +278,8 @@ export default function SignupPage() {
             <Button
               type="button"
               variant="secondary"
-              className="w-full"
+              className="btn-secondary w-full"
               onClick={() => {
-                // Toggle magic link mode by updating form value
                 const form = document.querySelector("form")!
                 const input = document.createElement("input")
                 input.type = "hidden"
@@ -267,11 +293,13 @@ export default function SignupPage() {
               Use Magic Link Instead
             </Button>
 
-            <p className="text-center text-sm text-white/50">
+            <p className="text-center text-sm" style={{ color: "var(--text-muted)" }}>
               Already have an account?{" "}
               <Link
                 href="/login"
-                className="text-[#00d4ff] hover:text-[#00d4ff]/80 transition-colors"
+                style={{ color: "var(--accent-gold)", transition: "opacity 0.2s" }}
+                onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.8")}
+                onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
               >
                 Sign in
               </Link>

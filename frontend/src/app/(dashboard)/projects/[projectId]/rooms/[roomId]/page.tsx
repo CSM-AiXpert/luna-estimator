@@ -20,7 +20,6 @@ import {
   ArrowLeft,
   Wand2,
   Upload,
-  Camera,
   Plus,
   Trash2,
   Loader2,
@@ -118,7 +117,6 @@ function RoomEstimatorInner({
     }
   }, [room])
 
-  // Measurements state
   const [measurementsState, setMeasurementsState] = useState<Array<{
     id?: string
     category: "wall" | "ceiling" | "floor" | "trim" | "opening" | "misc"
@@ -146,7 +144,6 @@ function RoomEstimatorInner({
         }))
       )
     } else if (measurements.length === 0 && !isLoading) {
-      // Initialize with 4 walls
       setMeasurementsState([
         { category: "wall", wall_index: 1, length: "", height: "", width: "", quantity: "1", source: "manual" },
         { category: "wall", wall_index: 2, length: "", height: "", width: "", quantity: "1", source: "manual" },
@@ -272,7 +269,6 @@ function RoomEstimatorInner({
     }
   }
 
-  // Calculate totals
   const wallMeasurements = measurementsState.filter((m) => m.category === "wall")
   const ceilingMeasurement = measurementsState.find((m) => m.category === "ceiling")
   const openingMeasurements = measurementsState.filter((m) => m.category === "opening")
@@ -318,481 +314,552 @@ function RoomEstimatorInner({
 
   if (isLoading) {
     return (
-      <div className="p-8">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 w-48 bg-white/[0.05] rounded" />
-          <div className="h-96 bg-white/[0.03] rounded-xl" />
+      <div className="min-h-screen" style={{ background: "var(--bg-primary)" }}>
+        <div
+          className="sticky top-0 z-30"
+          style={{
+            borderBottom: "1px solid rgba(255,255,255,0.06)",
+            background: "rgba(15,17,30,0.9)",
+            backdropFilter: "blur(24px)",
+            padding: "20px 32px",
+          }}
+        >
+          <div className="skeleton h-8 w-48 rounded" />
+        </div>
+        <div className="px-8 pt-6">
+          <div className="skeleton h-96 rounded-xl" />
         </div>
       </div>
     )
   }
 
+  const sourceBadgeClass = (source: string) =>
+    source === "ai_extracted"
+      ? "badge badge-gold"
+      : source === "calculated"
+      ? "badge badge-warning"
+      : "badge badge-muted"
+
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-8">
-        <Link href={`/projects/${projectId}`}>
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="h-4 w-4" />
+    <div className="min-h-screen" style={{ background: "var(--bg-primary)" }}>
+      {/* Sticky Header */}
+      <div
+        className="sticky top-0 z-30"
+        style={{
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          background: "rgba(15,17,30,0.9)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
+          padding: "20px 32px",
+        }}
+      >
+        <div className="flex items-center gap-4">
+          <Link href={`/projects/${projectId}`}>
+            <Button variant="ghost" size="icon" className="btn-ghost">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <div className="flex-1 flex items-center gap-4 min-w-0">
+            {editingName ? (
+              <Input
+                value={roomName}
+                onChange={(e) => setRoomName(e.target.value)}
+                onBlur={saveName}
+                onKeyDown={(e) => e.key === "Enter" && saveName()}
+                className="input text-xl font-bold max-w-xs"
+                autoFocus
+              />
+            ) : (
+              <h1
+                className="text-2xl font-bold cursor-pointer"
+                style={{ fontFamily: "var(--font-display)", color: "var(--text-primary)" }}
+                onClick={() => setEditingName(true)}
+              >
+                {roomName}
+              </h1>
+            )}
+            <Select value={roomType} onValueChange={(v: RoomType) => saveType(v)}>
+              <SelectTrigger className="input w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(ROOM_TYPE_LABELS).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button
+            onClick={handleSaveMeasurements}
+            disabled={updateMeasurement.isPending || createMeasurement.isPending}
+            className="btn-primary"
+          >
+            {updateMeasurement.isPending || createMeasurement.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <CheckCircle2 className="h-4 w-4" />
+            )}
+            Save
           </Button>
-        </Link>
-        <div className="flex-1 flex items-center gap-4">
-          {editingName ? (
-            <Input
-              value={roomName}
-              onChange={(e) => setRoomName(e.target.value)}
-              onBlur={saveName}
-              onKeyDown={(e) => e.key === "Enter" && saveName()}
-              className="text-xl font-bold max-w-xs"
-              autoFocus
-            />
-          ) : (
-            <h1
-              className="text-2xl font-bold text-white cursor-pointer hover:text-[#00d4ff] transition-colors"
-              onClick={() => setEditingName(true)}
-            >
-              {roomName}
-            </h1>
-          )}
-          <Select value={roomType} onValueChange={(v: RoomType) => saveType(v)}>
-            <SelectTrigger className="w-40">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.entries(ROOM_TYPE_LABELS).map(([value, label]) => (
-                <SelectItem key={value} value={value}>
-                  {label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
-        <Button onClick={handleSaveMeasurements} disabled={updateMeasurement.isPending || createMeasurement.isPending}>
-          {updateMeasurement.isPending || createMeasurement.isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <CheckCircle2 className="h-4 w-4" />
-          )}
-          Save
-        </Button>
       </div>
 
-      <div className="grid grid-cols-5 gap-6">
-        {/* LEFT: Measurements Panel */}
-        <div className="col-span-3 space-y-6">
-          {/* Measurements Grid */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Ruler className="h-4 w-4 text-[#00d4ff]" />
-                Measurements
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Wall Measurements */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label className="text-sm text-white/60">Walls</Label>
-                  <Button variant="ghost" size="sm" onClick={() => addMeasurementRow("wall")}>
-                    <Plus className="h-3 w-3" />
-                    Add Wall
-                  </Button>
-                </div>
-                <div className="space-y-2">
-                  {wallMeasurements.map((m, idx) => (
-                    <div key={idx} className="grid grid-cols-12 gap-2 items-center">
-                      <div className="col-span-1 text-xs text-white/30 flex items-center gap-1">
-                        <GripVertical className="h-3 w-3" />
-                        W{m.wall_index}
+      <div className="px-8 pt-6 pb-8 animate-fade-up">
+        <div className="grid grid-cols-5 gap-6">
+          {/* LEFT: Measurements + Line Items */}
+          <div className="col-span-3 space-y-6">
+            {/* Measurements Card */}
+            <Card className="card">
+              <CardHeader className="pb-4">
+                <CardTitle
+                  className="flex items-center gap-2 text-base"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  <Ruler className="h-4 w-4" style={{ color: "var(--accent-gold)" }} />
+                  Measurements
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Wall Measurements */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <Label className="text-sm" style={{ color: "var(--text-secondary)" }}>Walls</Label>
+                    <Button variant="ghost" size="sm" onClick={() => addMeasurementRow("wall")} className="btn-ghost">
+                      <Plus className="h-3 w-3" />
+                      Add Wall
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    {wallMeasurements.map((m, idx) => (
+                      <div key={idx} className="grid grid-cols-12 gap-2 items-center">
+                        <div className="col-span-1 text-xs flex items-center gap-1" style={{ color: "var(--text-muted)" }}>
+                          <GripVertical className="h-3 w-3" />
+                          W{m.wall_index}
+                        </div>
+                        <div className="col-span-2">
+                          <Input
+                            type="number"
+                            placeholder="Length"
+                            value={m.length}
+                            onChange={(e) => {
+                              const updated = [...measurementsState]
+                              const i = measurementsState.indexOf(m)
+                              updated[i] = { ...updated[i], length: e.target.value }
+                              setMeasurementsState(updated)
+                            }}
+                            className="input h-8 text-sm"
+                          />
+                        </div>
+                        <span className="col-span-1 text-center text-xs" style={{ color: "var(--text-muted)" }}>×</span>
+                        <div className="col-span-2">
+                          <Input
+                            type="number"
+                            placeholder="Height"
+                            value={m.height}
+                            onChange={(e) => {
+                              const updated = [...measurementsState]
+                              const i = measurementsState.indexOf(m)
+                              updated[i] = { ...updated[i], height: e.target.value }
+                              setMeasurementsState(updated)
+                            }}
+                            className="input h-8 text-sm"
+                          />
+                        </div>
+                        <span className="col-span-1 text-xs text-center" style={{ color: "var(--text-muted)" }}>=</span>
+                        <div
+                          className="col-span-3 px-2 py-1 text-center text-sm rounded"
+                          style={{
+                            background: "rgba(226,178,74,0.04)",
+                            border: "1px solid rgba(255,255,255,0.05)",
+                            color: "var(--accent-gold)",
+                          }}
+                        >
+                          {((parseFloat(m.length) || 0) * (parseFloat(m.height) || 0) * (parseInt(m.quantity) || 1)).toFixed(1)} sq ft
+                        </div>
+                        <div className="col-span-1">
+                          <span className={sourceBadgeClass(m.source)}>
+                            {m.source === "ai_extracted" ? "AI" : m.source === "calculated" ? "Calc" : "Manual"}
+                          </span>
+                        </div>
+                        <div className="col-span-1 flex justify-end">
+                          {m.id && (
+                            <Button
+                              variant="ghost"
+                              size="icon-sm"
+                              onClick={() => {
+                                deleteMeasurement.mutate(m.id!)
+                                setMeasurementsState((prev) => prev.filter((s) => s !== m))
+                              }}
+                              className="btn-ghost"
+                              style={{ color: "var(--text-muted)" }}
+                              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--error)")}
+                              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Ceiling */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <Label className="text-sm" style={{ color: "var(--text-secondary)" }}>Ceiling</Label>
+                  </div>
+                  {ceilingMeasurement && (
+                    <div className="grid grid-cols-12 gap-2 items-center">
+                      <div className="col-span-1 text-xs" style={{ color: "var(--text-muted)" }}>CL</div>
                       <div className="col-span-2">
                         <Input
                           type="number"
                           placeholder="Length"
-                          value={m.length}
+                          value={ceilingMeasurement.length}
                           onChange={(e) => {
-                            const updated = [...measurementsState]
-                            const i = measurementsState.indexOf(m)
-                            updated[i] = { ...updated[i], length: e.target.value }
-                            setMeasurementsState(updated)
+                            setMeasurementsState((prev) =>
+                              prev.map((m) =>
+                                m === ceilingMeasurement ? { ...m, length: e.target.value } : m
+                              )
+                            )
                           }}
-                          className="h-8 text-sm"
+                          className="input h-8 text-sm"
                         />
                       </div>
-                      <span className="col-span-1 text-center text-xs text-white/30">×</span>
+                      <span className="col-span-1 text-center text-xs" style={{ color: "var(--text-muted)" }}>×</span>
                       <div className="col-span-2">
                         <Input
                           type="number"
-                          placeholder="Height"
-                          value={m.height}
+                          placeholder="Width"
+                          value={ceilingMeasurement.width}
                           onChange={(e) => {
-                            const updated = [...measurementsState]
-                            const i = measurementsState.indexOf(m)
-                            updated[i] = { ...updated[i], height: e.target.value }
-                            setMeasurementsState(updated)
+                            setMeasurementsState((prev) =>
+                              prev.map((m) =>
+                                m === ceilingMeasurement ? { ...m, width: e.target.value } : m
+                              )
+                            )
                           }}
-                          className="h-8 text-sm"
+                          className="input h-8 text-sm"
                         />
                       </div>
-                      <span className="col-span-1 text-xs text-white/30">=</span>
-                      <div className="col-span-3 bg-white/[0.03] rounded px-2 py-1 text-center text-sm text-[#00d4ff]">
-                        {((parseFloat(m.length) || 0) * (parseFloat(m.height) || 0) * (parseInt(m.quantity) || 1)).toFixed(1)} sq ft
+                      <span className="col-span-1 text-xs text-center" style={{ color: "var(--text-muted)" }}>=</span>
+                      <div
+                        className="col-span-3 px-2 py-1 text-center text-sm rounded"
+                        style={{
+                          background: "rgba(226,178,74,0.04)",
+                          border: "1px solid rgba(255,255,255,0.05)",
+                          color: "var(--accent-gold)",
+                        }}
+                      >
+                        {totalCeilingSqFt.toFixed(1)} sq ft
                       </div>
                       <div className="col-span-1">
-                        <Badge className={`badge-${m.source === "ai_extracted" ? "ai" : m.source === "calculated" ? "calculated" : "manual"} text-xs`}>
-                          {m.source === "ai_extracted" ? "AI" : m.source === "calculated" ? "Calc" : "Manual"}
-                        </Badge>
+                        <span className={sourceBadgeClass(ceilingMeasurement.source)}>
+                          {ceilingMeasurement.source === "ai_extracted" ? "AI" : "Manual"}
+                        </span>
                       </div>
-                      <div className="col-span-1 flex justify-end">
-                        {m.id && (
-                          <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            onClick={() => {
-                              deleteMeasurement.mutate(m.id!)
-                              setMeasurementsState((prev) => prev.filter((s) => s !== m))
-                            }}
-                            className="text-white/20 hover:text-red-400"
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        )}
-                      </div>
+                      <div className="col-span-1" />
                     </div>
-                  ))}
+                  )}
                 </div>
-              </div>
 
-              {/* Ceiling */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label className="text-sm text-white/60">Ceiling</Label>
-                </div>
-                {ceilingMeasurement && (
-                  <div className="grid grid-cols-12 gap-2 items-center">
-                    <div className="col-span-1 text-xs text-white/30">CL</div>
-                    <div className="col-span-2">
-                      <Input
-                        type="number"
-                        placeholder="Length"
-                        value={ceilingMeasurement.length}
-                        onChange={(e) => {
-                          setMeasurementsState((prev) =>
-                            prev.map((m) =>
-                              m === ceilingMeasurement ? { ...m, length: e.target.value } : m
-                            )
-                          )
-                        }}
-                        className="h-8 text-sm"
-                      />
-                    </div>
-                    <span className="col-span-1 text-center text-xs text-white/30">×</span>
-                    <div className="col-span-2">
-                      <Input
-                        type="number"
-                        placeholder="Width"
-                        value={ceilingMeasurement.width}
-                        onChange={(e) => {
-                          setMeasurementsState((prev) =>
-                            prev.map((m) =>
-                              m === ceilingMeasurement ? { ...m, width: e.target.value } : m
-                            )
-                          )
-                        }}
-                        className="h-8 text-sm"
-                      />
-                    </div>
-                    <span className="col-span-1 text-xs text-white/30">=</span>
-                    <div className="col-span-3 bg-white/[0.03] rounded px-2 py-1 text-center text-sm text-[#00d4ff]">
-                      {totalCeilingSqFt.toFixed(1)} sq ft
-                    </div>
-                    <div className="col-span-1">
-                      <Badge className={`badge-${ceilingMeasurement.source === "ai_extracted" ? "ai" : "manual"} text-xs`}>
-                        {ceilingMeasurement.source === "ai_extracted" ? "AI" : "Manual"}
-                      </Badge>
-                    </div>
-                    <div className="col-span-1" />
-                  </div>
-                )}
-              </div>
-
-              {/* Openings */}
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <Label className="text-sm text-white/60">Doors</Label>
-                    <Button variant="ghost" size="sm" onClick={() => addMeasurementRow("opening", "door")}>
-                      <Plus className="h-3 w-3" />
-                    </Button>
-                  </div>
-                  <div className="space-y-2">
-                    {doorMeasurements.map((m, idx) => (
-                      <div key={idx} className="grid grid-cols-4 gap-2 items-center">
-                        <div className="col-span-1">
-                          <Input
-                            type="number"
-                            placeholder="H"
-                            value={m.height}
-                            onChange={(e) => {
-                              const updated = [...measurementsState]
-                              const i = measurementsState.indexOf(m)
-                              updated[i] = { ...updated[i], height: e.target.value }
-                              setMeasurementsState(updated)
-                            }}
-                            className="h-8 text-sm"
-                          />
-                        </div>
-                        <span className="col-span-1 text-center text-xs text-white/30">×</span>
-                        <div className="col-span-1">
-                          <Input
-                            type="number"
-                            placeholder="W"
-                            value={m.width}
-                            onChange={(e) => {
-                              const updated = [...measurementsState]
-                              const i = measurementsState.indexOf(m)
-                              updated[i] = { ...updated[i], width: e.target.value }
-                              setMeasurementsState(updated)
-                            }}
-                            className="h-8 text-sm"
-                          />
-                        </div>
-                        <div className="col-span-1 text-right">
-                          <Badge className="badge-manual text-xs">Deduction</Badge>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <Label className="text-sm text-white/60">Windows</Label>
-                    <Button variant="ghost" size="sm" onClick={() => addMeasurementRow("opening", "window")}>
-                      <Plus className="h-3 w-3" />
-                    </Button>
-                  </div>
-                  <div className="space-y-2">
-                    {windowMeasurements.map((m, idx) => (
-                      <div key={idx} className="grid grid-cols-4 gap-2 items-center">
-                        <div className="col-span-1">
-                          <Input
-                            type="number"
-                            placeholder="H"
-                            value={m.height}
-                            onChange={(e) => {
-                              const updated = [...measurementsState]
-                              const i = measurementsState.indexOf(m)
-                              updated[i] = { ...updated[i], height: e.target.value }
-                              setMeasurementsState(updated)
-                            }}
-                            className="h-8 text-sm"
-                          />
-                        </div>
-                        <span className="col-span-1 text-center text-xs text-white/30">×</span>
-                        <div className="col-span-1">
-                          <Input
-                            type="number"
-                            placeholder="W"
-                            value={m.width}
-                            onChange={(e) => {
-                              const updated = [...measurementsState]
-                              const i = measurementsState.indexOf(m)
-                              updated[i] = { ...updated[i], width: e.target.value }
-                              setMeasurementsState(updated)
-                            }}
-                            className="h-8 text-sm"
-                          />
-                        </div>
-                        <div className="col-span-1 text-right">
-                          <Badge className="badge-manual text-xs">Deduction</Badge>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Totals */}
-              <div className="border-t border-white/10 pt-4 space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-white/40">Wall Area</span>
-                  <span className="text-white">{totalWallSqFt.toFixed(1)} sq ft</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-white/40">Ceiling Area</span>
-                  <span className="text-white">{totalCeilingSqFt.toFixed(1)} sq ft</span>
-                </div>
-                <div className="flex justify-between text-sm text-red-400/70">
-                  <span>Openings Deduction</span>
-                  <span>-{(totalDoorSqFt + totalWindowSqFt).toFixed(1)} sq ft</span>
-                </div>
-                <div className="border-t border-white/10 pt-2 flex justify-between font-semibold">
-                  <span className="text-white">Net Surface Area</span>
-                  <span className="text-[#00d4ff]">{netSqFt.toFixed(1)} sq ft</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Line Items */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <DollarSign className="h-4 w-4 text-[#00d4ff]" />
-                Line Items
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Existing line items */}
-              {roomLineItems.length > 0 && (
-                <div className="space-y-2">
-                  {roomLineItems.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.02] border border-white/5"
-                    >
-                      <div className="flex-1">
-                        <p className="text-sm text-white">{item.description}</p>
-                        {item.category && (
-                          <p className="text-xs text-white/30">{item.category}</p>
-                        )}
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-[#00d4ff]">
-                          {formatCurrency(item.total_cost)}
-                        </p>
-                        <p className="text-xs text-white/30">
-                          {item.unit && `${item.unit} × `}{item.quantity}
-                        </p>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        onClick={() => handleDeleteLineItem(item.id)}
-                        className="text-white/20 hover:text-red-400"
-                      >
-                        <Trash2 className="h-3 w-3" />
+                {/* Openings */}
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <Label className="text-sm" style={{ color: "var(--text-secondary)" }}>Doors</Label>
+                      <Button variant="ghost" size="sm" onClick={() => addMeasurementRow("opening", "door")} className="btn-ghost">
+                        <Plus className="h-3 w-3" />
                       </Button>
                     </div>
-                  ))}
+                    <div className="space-y-2">
+                      {doorMeasurements.map((m, idx) => (
+                        <div key={idx} className="grid grid-cols-4 gap-2 items-center">
+                          <div className="col-span-1">
+                            <Input
+                              type="number"
+                              placeholder="H"
+                              value={m.height}
+                              onChange={(e) => {
+                                const updated = [...measurementsState]
+                                const i = measurementsState.indexOf(m)
+                                updated[i] = { ...updated[i], height: e.target.value }
+                                setMeasurementsState(updated)
+                              }}
+                              className="input h-8 text-sm"
+                            />
+                          </div>
+                          <span className="col-span-1 text-center text-xs" style={{ color: "var(--text-muted)" }}>×</span>
+                          <div className="col-span-1">
+                            <Input
+                              type="number"
+                              placeholder="W"
+                              value={m.width}
+                              onChange={(e) => {
+                                const updated = [...measurementsState]
+                                const i = measurementsState.indexOf(m)
+                                updated[i] = { ...updated[i], width: e.target.value }
+                                setMeasurementsState(updated)
+                              }}
+                              className="input h-8 text-sm"
+                            />
+                          </div>
+                          <div className="col-span-1 text-right">
+                            <span className="badge badge-error text-xs">Deduction</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <Label className="text-sm" style={{ color: "var(--text-secondary)" }}>Windows</Label>
+                      <Button variant="ghost" size="sm" onClick={() => addMeasurementRow("opening", "window")} className="btn-ghost">
+                        <Plus className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      {windowMeasurements.map((m, idx) => (
+                        <div key={idx} className="grid grid-cols-4 gap-2 items-center">
+                          <div className="col-span-1">
+                            <Input
+                              type="number"
+                              placeholder="H"
+                              value={m.height}
+                              onChange={(e) => {
+                                const updated = [...measurementsState]
+                                const i = measurementsState.indexOf(m)
+                                updated[i] = { ...updated[i], height: e.target.value }
+                                setMeasurementsState(updated)
+                              }}
+                              className="input h-8 text-sm"
+                            />
+                          </div>
+                          <span className="col-span-1 text-center text-xs" style={{ color: "var(--text-muted)" }}>×</span>
+                          <div className="col-span-1">
+                            <Input
+                              type="number"
+                              placeholder="W"
+                              value={m.width}
+                              onChange={(e) => {
+                                const updated = [...measurementsState]
+                                const i = measurementsState.indexOf(m)
+                                updated[i] = { ...updated[i], width: e.target.value }
+                                setMeasurementsState(updated)
+                              }}
+                              className="input h-8 text-sm"
+                            />
+                          </div>
+                          <div className="col-span-1 text-right">
+                            <span className="badge badge-error text-xs">Deduction</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-              )}
 
-              {/* Add line item form */}
-              <form onSubmit={handleAddLineItem} className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <Input
-                    placeholder="Description"
-                    value={lineForm.description}
-                    onChange={(e) => setLineForm({ ...lineForm, description: e.target.value })}
-                    className="text-sm"
-                  />
-                  <Input
-                    placeholder="Category (optional)"
-                    value={lineForm.category}
-                    onChange={(e) => setLineForm({ ...lineForm, category: e.target.value })}
-                    className="text-sm"
-                  />
+                {/* Totals */}
+                <div className="border-t pt-4 space-y-2" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
+                  <div className="flex justify-between text-sm">
+                    <span style={{ color: "var(--text-muted)" }}>Wall Area</span>
+                    <span style={{ color: "var(--text-primary)" }}>{totalWallSqFt.toFixed(1)} sq ft</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span style={{ color: "var(--text-muted)" }}>Ceiling Area</span>
+                    <span style={{ color: "var(--text-primary)" }}>{totalCeilingSqFt.toFixed(1)} sq ft</span>
+                  </div>
+                  <div className="flex justify-between text-sm" style={{ color: "var(--error)", opacity: 0.7 }}>
+                    <span>Openings Deduction</span>
+                    <span>-{(totalDoorSqFt + totalWindowSqFt).toFixed(1)} sq ft</span>
+                  </div>
+                  <div className="border-t pt-2 flex justify-between font-semibold">
+                    <span style={{ color: "var(--text-primary)" }}>Net Surface Area</span>
+                    <span style={{ color: "var(--accent-gold)" }}>{netSqFt.toFixed(1)} sq ft</span>
+                  </div>
                 </div>
-                <div className="grid grid-cols-4 gap-3">
-                  <Input
-                    type="number"
-                    placeholder="Unit Cost $"
-                    value={lineForm.unit_cost}
-                    onChange={(e) => setLineForm({ ...lineForm, unit_cost: e.target.value })}
-                    className="text-sm"
-                  />
-                  <Input
-                    placeholder="Unit (sqft/lf/ea)"
-                    value={lineForm.unit}
-                    onChange={(e) => setLineForm({ ...lineForm, unit: e.target.value })}
-                    className="text-sm"
-                  />
-                  <Input
-                    type="number"
-                    placeholder="Qty"
-                    value={lineForm.quantity}
-                    onChange={(e) => setLineForm({ ...lineForm, quantity: e.target.value })}
-                    className="text-sm"
-                  />
-                  <Button type="submit" size="sm" disabled={!lineForm.description}>
-                    <Plus className="h-3 w-3" />
-                    Add
-                  </Button>
-                </div>
-              </form>
+              </CardContent>
+            </Card>
 
-              {/* Room subtotal */}
-              {roomLineItems.length > 0 && (
-                <div className="border-t border-white/10 pt-3 flex justify-between font-semibold">
-                  <span className="text-white">Room Subtotal</span>
-                  <span className="text-[#00d4ff]">{formatCurrency(roomSubtotal)}</span>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* RIGHT: Photos + Visualizer Panel */}
-        <div className="col-span-2 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Upload className="h-4 w-4 text-[#00d4ff]" />
-                Photos
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <FileUploader projectId={projectId} roomId={roomId} />
-              </div>
-
-              {imageFiles.length > 0 && (
-                <div className="grid grid-cols-2 gap-2">
-                  {imageFiles.map((file) => (
-                    <div
-                      key={file.id}
-                      className="relative aspect-square rounded-lg overflow-hidden border border-white/10 group"
-                    >
-                      <Image
-                        src={file.storage_path}
-                        alt={file.file_name}
-                        fill
-                        className="object-cover"
-                        unoptimized
-                      />
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            {/* Line Items Card */}
+            <Card className="card">
+              <CardHeader className="pb-4">
+                <CardTitle
+                  className="flex items-center gap-2 text-base"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  <DollarSign className="h-4 w-4" style={{ color: "var(--accent-gold)" }} />
+                  Line Items
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Existing line items */}
+                {roomLineItems.length > 0 && (
+                  <div className="space-y-2">
+                    {roomLineItems.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center gap-3 p-3 rounded-lg"
+                        style={{
+                          background: "rgba(255,255,255,0.02)",
+                          border: "1px solid rgba(255,255,255,0.05)",
+                        }}
+                      >
+                        <div className="flex-1">
+                          <p className="text-sm" style={{ color: "var(--text-primary)" }}>{item.description}</p>
+                          {item.category && (
+                            <p className="text-xs" style={{ color: "var(--text-muted)" }}>{item.category}</p>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm" style={{ color: "var(--accent-gold)" }}>
+                            {formatCurrency(item.total_cost)}
+                          </p>
+                          <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                            {item.unit && `${item.unit} × `}{item.quantity}
+                          </p>
+                        </div>
                         <Button
-                          size="sm"
-                          variant="secondary"
-                          onClick={() =>
-                            setVisualizerImage({
-                              url: file.storage_path,
-                              name: file.file_name,
-                            })
-                          }
+                          variant="ghost"
+                          size="icon-sm"
+                          onClick={() => handleDeleteLineItem(item.id)}
+                          className="btn-ghost"
+                          style={{ color: "var(--text-muted)" }}
+                          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--error)")}
+                          onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
                         >
-                          <Wand2 className="h-3 w-3" />
-                          AI Visualizer
+                          <Trash2 className="h-3 w-3" />
                         </Button>
                       </div>
-                      <div className="absolute bottom-1 right-1">
-                        {file.processing_status === "completed" ? (
-                          <CheckCircle2 className="h-4 w-4 text-green-400" />
-                        ) : file.processing_status === "processing" ? (
-                          <Loader2 className="h-4 w-4 text-blue-400 animate-spin" />
-                        ) : file.processing_status === "failed" ? (
-                          <AlertCircle className="h-4 w-4 text-red-400" />
-                        ) : (
-                          <Clock className="h-4 w-4 text-yellow-400" />
-                        )}
+                    ))}
+                  </div>
+                )}
+
+                {/* Add line item form */}
+                <form onSubmit={handleAddLineItem} className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <Input
+                      placeholder="Description"
+                      value={lineForm.description}
+                      onChange={(e) => setLineForm({ ...lineForm, description: e.target.value })}
+                      className="input text-sm"
+                    />
+                    <Input
+                      placeholder="Category (optional)"
+                      value={lineForm.category}
+                      onChange={(e) => setLineForm({ ...lineForm, category: e.target.value })}
+                      className="input text-sm"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 gap-3">
+                    <Input
+                      type="number"
+                      placeholder="Unit Cost $"
+                      value={lineForm.unit_cost}
+                      onChange={(e) => setLineForm({ ...lineForm, unit_cost: e.target.value })}
+                      className="input text-sm"
+                    />
+                    <Input
+                      placeholder="Unit (sqft/lf/ea)"
+                      value={lineForm.unit}
+                      onChange={(e) => setLineForm({ ...lineForm, unit: e.target.value })}
+                      className="input text-sm"
+                    />
+                    <Input
+                      type="number"
+                      placeholder="Qty"
+                      value={lineForm.quantity}
+                      onChange={(e) => setLineForm({ ...lineForm, quantity: e.target.value })}
+                      className="input text-sm"
+                    />
+                    <Button type="submit" size="sm" disabled={!lineForm.description} className="btn-primary">
+                      <Plus className="h-3 w-3" />
+                      Add
+                    </Button>
+                  </div>
+                </form>
+
+                {/* Room subtotal */}
+                {roomLineItems.length > 0 && (
+                  <div className="border-t pt-3 flex justify-between font-semibold" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
+                    <span style={{ color: "var(--text-primary)" }}>Room Subtotal</span>
+                    <span style={{ color: "var(--accent-gold)" }}>{formatCurrency(roomSubtotal)}</span>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* RIGHT: Photos + Visualizer */}
+          <div className="col-span-2 space-y-6">
+            <Card className="card">
+              <CardHeader className="pb-4">
+                <CardTitle
+                  className="flex items-center gap-2 text-base"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  <Upload className="h-4 w-4" style={{ color: "var(--accent-gold)" }} />
+                  Photos
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <FileUploader projectId={projectId} roomId={roomId} />
+
+                {imageFiles.length > 0 && (
+                  <div className="grid grid-cols-2 gap-2">
+                    {imageFiles.map((file) => (
+                      <div
+                        key={file.id}
+                        className="relative aspect-square rounded-lg overflow-hidden group"
+                        style={{ border: "1px solid rgba(255,255,255,0.1)" }}
+                      >
+                        <Image
+                          src={file.storage_path}
+                          alt={file.file_name}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                        <div
+                          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                          style={{ background: "rgba(0,0,0,0.5)" }}
+                        >
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            className="btn-primary"
+                            onClick={() =>
+                              setVisualizerImage({
+                                url: file.storage_path,
+                                name: file.file_name,
+                              })
+                            }
+                          >
+                            <Wand2 className="h-3 w-3" />
+                            AI Visualizer
+                          </Button>
+                        </div>
+                        <div className="absolute bottom-1 right-1">
+                          {file.processing_status === "completed" ? (
+                            <CheckCircle2 className="h-4 w-4" style={{ color: "#10b981" }} />
+                          ) : file.processing_status === "processing" ? (
+                            <Loader2 className="h-4 w-4 animate-spin" style={{ color: "#3b82f6" }} />
+                          ) : file.processing_status === "failed" ? (
+                            <AlertCircle className="h-4 w-4" style={{ color: "var(--error)" }} />
+                          ) : (
+                            <Clock className="h-4 w-4" style={{ color: "#f59e0b" }} />
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
 
