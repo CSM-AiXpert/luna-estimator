@@ -15,7 +15,7 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get("NEXT_PUBLIC_SUPABASE_URL")!;
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const openaiApiKey = Deno.env.get("OPENAI_API_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -66,7 +66,7 @@ serve(async (req) => {
 
     // Download room photo from storage
     const { data: imageData, error: downloadError } = await supabase.storage
-      .from("room-photos")
+      .from("project-files")
       .download(roomPhoto.storage_path);
 
     if (downloadError || !imageData) {

@@ -74,6 +74,27 @@ export function FileUploader({ projectId, roomId }: FileUploaderProps) {
           source: "upload",
           processing_status: "pending",
         })
+
+        // Also create a room_photos record for images (needed by AI visualizer)
+        if (isImage && roomId && sb) {
+          const fileRecord = await sb
+            .from("project_files")
+            .select("id")
+            .eq("storage_path", filePath)
+            .eq("room_id", roomId)
+            .single()
+          if (fileRecord.data) {
+            // @ts-ignore - room_photos insert for AI visualizer integration
+            await sb.from("room_photos").insert({
+              room_id: roomId,
+              storage_path: filePath,
+              file_name: file.name,
+              file_type: file.type,
+              file_size: file.size,
+              is_primary: false,
+            })
+          }
+        }
       } catch {
         toast({ title: `Failed to save ${file.name} to database`, variant: "error" })
       }

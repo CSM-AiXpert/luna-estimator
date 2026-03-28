@@ -1,5 +1,15 @@
-// extract-pdf/index.ts
-// Parses PDF, extracts dimensions/measurements using OpenAI
+/**
+ * extract-pdf — Supabase Edge Function
+ *
+ * Parses PDF files, extracts room measurements using OpenAI GPT-4o vision,
+ * and inserts them into the measurements table.
+ *
+ * Triggered by: pg_cron when a processing_jobs row has status='queued'
+ * and job_type='extract-pdf'.
+ *
+ * POST /
+ * Body: { job_id: string }
+ */
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -18,23 +28,21 @@ interface Measurement {
   confidence_score?: number;
 }
 
-serve(async (req) => {
+serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const supabaseUrl = Deno.env.get("NEXT_PUBLIC_SUPABASE_URL")!;
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const openaiApiKey = Deno.env.get("OPENAI_API_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const { job_id } = await req.json();
-
     if (!job_id) {
       return new Response(JSON.stringify({ error: "job_id is required" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -47,12 +55,17 @@ serve(async (req) => {
 
     if (jobError || !job) {
       return new Response(JSON.stringify({ error: "Job not found" }), {
-        status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Mark job as processing
+    if (job.status !== "queued") {
+      return new Response(JSON.stringify({ error: `Job already processed (status: ${job.status})` }), {
+        status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Mark job + file as processing
     await supabase
       .from("processing_jobs")
       .update({ status: "processing", started_at: new Date().toISOString() })
@@ -60,12 +73,17 @@ serve(async (req) => {
 
     await supabase
       .from("project_files")
-      .update({ processing_status: "extracting" })
+      .update({ processing_status: "processing" })
       .eq("id", job.project_file_id);
 
-    const inputData = job.input_data as Record<string, string>;
-    const storagePath = inputData.storage_path;
-    const roomId = inputData.room_id;
+    // Read context from input_data (set by process-file)
+    const inputData = job.input_data as Record<string, string | null>;
+    const storagePath = inputData.storage_path as string;
+    const roomId = inputData.room_id as string | null;
+
+    if (!storagePath) {
+      throw new Error("No storage_path in job input_data");
+    }
 
     // Download PDF from storage
     const { data: fileData, error: downloadError } = await supabase.storage
@@ -76,13 +94,14 @@ serve(async (req) => {
       throw new Error(`Failed to download PDF: ${downloadError?.message}`);
     }
 
+    // Get file size
+    const fileSize = fileData.size;
+
     // Convert to base64
     const arrayBuffer = await fileData.arrayBuffer();
     const base64Pdf = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
 
-    // Use OpenAI to extract measurements from PDF content description
-    // Note: For a production system, you'd use a PDF parsing library first,
-    // then send the extracted text to OpenAI. Here we use a vision model approach.
+    // Extract measurements using OpenAI
     const openaiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -94,9 +113,17 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `You are a construction measurement extraction specialist. Given a PDF containing room measurements, wall dimensions, or construction drawings, extract all measurements.
+            content: `You are a construction measurement extraction specialist for drywall and paint estimation.
 
-Return a JSON object with this exact structure:
+From the PDF content, extract ALL measurements useful for a drywall/paint contractor:
+- Wall square footage (per wall and total)
+- Ceiling square footage
+- Floor square footage
+- Linear footage of trim (baseboard, crown, door casing)
+- Door and window opening dimensions (for deduction)
+- Any other relevant dimensions
+
+Return a JSON object:
 {
   "measurements": [
     {
@@ -116,11 +143,11 @@ Return a JSON object with this exact structure:
             content: [
               {
                 type: "text",
-                text: `Please analyze this PDF and extract all room measurements, dimensions, and quantities visible. The file is a construction/drywall/paint related document. Extract all measurements including wall square footage, linear footage of trim, ceiling areas, door/window openings, and any other relevant dimensions.
-
-If the PDF cannot be read or contains no extractable measurements, return an empty measurements array with a summary explaining why.
-
-Storage path: ${storagePath}`,
+                text: `Extract all room measurements and dimensions from this PDF. Include wall areas, ceiling, floor, trim lengths, and opening dimensions. Be thorough — list every measurement you can find.`,
+              },
+              {
+                type: "image_url",
+                image_url: { url: `data:application/pdf;base64,${base64Pdf}` },
               },
             ],
           },
@@ -147,7 +174,7 @@ Storage path: ${storagePath}`,
       }
     }
 
-    // Insert measurements into the database
+    // Insert measurements
     if (roomId && extractedData.measurements.length > 0) {
       const measurementRecords = extractedData.measurements.map((m) => ({
         room_id: roomId,
@@ -156,7 +183,7 @@ Storage path: ${storagePath}`,
         label: m.label,
         value: m.value,
         unit: m.unit,
-        source: "ai_extracted" as const,
+        source: "ai_extracted",
         confidence_score: m.confidence_score || null,
         notes: null,
       }));
@@ -170,7 +197,7 @@ Storage path: ${storagePath}`,
       }
     }
 
-    // Mark job as completed
+    // Mark job completed
     await supabase
       .from("processing_jobs")
       .update({
@@ -183,9 +210,10 @@ Storage path: ${storagePath}`,
       })
       .eq("id", job_id);
 
+    // Update project file — correct status + file_size
     await supabase
       .from("project_files")
-      .update({ processing_status: "completed" })
+      .update({ processing_status: "completed", file_size: fileSize })
       .eq("id", job.project_file_id);
 
     return new Response(
@@ -197,34 +225,40 @@ Storage path: ${storagePath}`,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
+
   } catch (error) {
     console.error("Error in extract-pdf:", error);
+    const message = error instanceof Error ? error.message : "Unknown error";
 
-    // Try to mark job as failed
     try {
-      const supabaseUrl = Deno.env.get("NEXT_PUBLIC_SUPABASE_URL")!;
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
       const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
       const supabase = createClient(supabaseUrl, supabaseServiceKey);
       const { job_id } = await req.json().catch(() => ({}));
 
       if (job_id) {
+        const { data: job } = await supabase
+          .from("processing_jobs")
+          .select("project_file_id")
+          .eq("id", job_id)
+          .single();
+
         await supabase
           .from("processing_jobs")
-          .update({ status: "failed", error_message: error.message })
+          .update({ status: "failed", error_message: message })
           .eq("id", job_id);
 
         await supabase
           .from("project_files")
-          .update({ processing_status: "failed", processing_error: error.message })
-          .eq("id", (await supabase.from("processing_jobs").select("project_file_id").eq("id", job_id).single()).data?.project_file_id);
+          .update({ processing_status: "failed", processing_error: message })
+          .eq("id", job?.project_file_id);
       }
     } catch (_) {
       // ignore cleanup errors
     }
 
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    return new Response(JSON.stringify({ error: message }), {
+      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });

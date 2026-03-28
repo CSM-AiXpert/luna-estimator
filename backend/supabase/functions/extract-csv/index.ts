@@ -1,15 +1,15 @@
 /**
  * extract-csv — Supabase Edge Function
- * 
- * Parses CSV measurement exports and maps rows to the measurements table.
- * Supports columns like 'room', 'width', 'length', 'height', 'area', 'description', 'material'.
- * 
+ *
+ * Parses CSV measurement exports and inserts them into the measurements table.
+ * Triggered by: pg_cron when a processing_jobs row has status='queued'
+ * and job_type='extract-csv'.
+ *
+ * Expected in processing_jobs.input_data:
+ *   { storage_path: string, room_id: string, file_name: string }
+ *
  * POST /
- * Body: {
- *   projectFileId: string,
- *   roomId: string,
- *   storagePath: string
- * }
+ * Body: { job_id: string }
  */
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -29,56 +29,30 @@ interface CSVRow {
   notes: string | null;
 }
 
-/**
- * Normalize column header names to standard keys
- */
 function normalizeHeader(header: string): string {
   const h = header.toLowerCase().trim().replace(/['"]/g, "");
-  
-  if (["label", "name", "element", "description", "element_type"].some(k => h.includes(k))) {
-    return "label";
-  }
-  if (["type", "category", "element"].some(k => h.includes(k))) {
-    return "type";
-  }
-  if (["length", "width", "wall_length"].some(k => h.includes(k)) && !h.includes("height")) {
-    return "length";
-  }
-  if (["height", "wall_height", "ceiling_height"].some(k => h.includes(k))) {
-    return "height";
-  }
-  if (["area", "sqft", "wall_area"].some(k => h.includes(k))) {
-    return "area";
-  }
-  if (["material", "notes", "description"].some(k => h.includes(k))) {
-    return "notes";
-  }
-  
+  if (["label", "name", "element", "description", "element_type"].some((k) => h.includes(k))) return "label";
+  if (["type", "category", "element"].some((k) => h.includes(k))) return "type";
+  if (["length", "width", "wall_length"].some((k) => h.includes(k)) && !h.includes("height")) return "length";
+  if (["height", "wall_height", "ceiling_height"].some((k) => h.includes(k))) return "height";
+  if (["area", "sqft", "wall_area"].some((k) => h.includes(k))) return "area";
+  if (["material", "notes", "description"].some((k) => h.includes(k))) return "notes";
   return "unknown";
 }
 
-/**
- * Parse CSV content into structured rows
- */
-function parseCSVContent(content: string): { rows: CSVRow[]; totalWallArea: number; totalDoorArea: number; totalWindowArea: number } {
-  const lines = content.trim().split("\n").filter(line => line.trim().length > 0);
-  
-  if (lines.length < 2) {
-    return { rows: [], totalWallArea: 0, totalDoorArea: 0, totalWindowArea: 0 };
-  }
+function parseCSVContent(content: string): { rows: CSVRow[] } {
+  const lines = content.trim().split("\n").filter((line) => line.trim().length > 0);
+  if (lines.length < 2) return { rows: [] };
 
-  // Parse headers
-  const headerLine = lines[0];
-  const rawHeaders = headerLine.split(",").map(h => h.trim().replace(/['"]/g, ""));
+  const rawHeaders = lines[0].split(",").map((h) => h.trim().replace(/['"]/g, ""));
   const normalizedHeaders = rawHeaders.map(normalizeHeader);
-  
-  // Find column indices for each normalized type
-  const getIndices = (type: string): number[] => 
+
+  const getIndices = (type: string): number[] =>
     normalizedHeaders.reduce((acc: number[], h, i) => {
       if (h === type) acc.push(i);
       return acc;
     }, []);
-  
+
   const labelIndices = getIndices("label");
   const typeIndices = getIndices("type");
   const lengthIndices = getIndices("length");
@@ -88,7 +62,7 @@ function parseCSVContent(content: string): { rows: CSVRow[]; totalWallArea: numb
 
   const getValue = (indices: number[], cols: string[]): string | null => {
     for (const idx of indices) {
-      if (cols[idx] && cols[idx].trim()) return cols[idx].trim();
+      if (cols[idx]?.trim()) return cols[idx].trim();
     }
     return null;
   };
@@ -100,53 +74,32 @@ function parseCSVContent(content: string): { rows: CSVRow[]; totalWallArea: numb
   };
 
   const rows: CSVRow[] = [];
-  let totalWallArea = 0;
-  let totalDoorArea = 0;
-  let totalWindowArea = 0;
 
   for (let i = 1; i < lines.length; i++) {
-    const cols = lines[i].split(",").map(c => c.trim().replace(/['"]/g, ""));
-    
+    const cols = lines[i].split(",").map((c) => c.trim().replace(/['"]/g, ""));
     const rawType = getValue(typeIndices, cols)?.toLowerCase() || "wall";
-    const type: CSVRow["type"] = rawType.includes("door") ? "door" 
-      : rawType.includes("window") ? "window"
-      : rawType.includes("ceiling") ? "ceiling"
-      : rawType.includes("floor") ? "floor"
+    const type: CSVRow["type"] = rawType.includes("door")
+      ? "door"
+      : rawType.includes("window")
+      ? "window"
+      : rawType.includes("ceiling")
+      ? "ceiling"
+      : rawType.includes("floor")
+      ? "floor"
       : "wall";
 
     const length_ft = parseNum(getValue(lengthIndices, cols));
     const height_ft = parseNum(getValue(heightIndices, cols));
-    
-    // Calculate area if not directly provided
     let area_sqft = parseNum(getValue(areaIndices, cols));
-    if (!area_sqft && length_ft && height_ft) {
-      area_sqft = length_ft * height_ft;
-    }
+    if (!area_sqft && length_ft && height_ft) area_sqft = length_ft * height_ft;
 
     const label = getValue(labelIndices, cols) || `Element ${i}`;
     const notes = getValue(notesIndices, cols);
 
-    const row: CSVRow = {
-      label,
-      type,
-      length_ft,
-      height_ft,
-      area_sqft,
-      confidence: 0.95, // CSV values are direct measurements, high confidence
-      notes,
-    };
-
-    rows.push(row);
-
-    // Accumulate totals
-    if (area_sqft) {
-      if (type === "wall") totalWallArea += area_sqft;
-      else if (type === "door") totalDoorArea += area_sqft;
-      else if (type === "window") totalWindowArea += area_sqft;
-    }
+    rows.push({ label, type, length_ft, height_ft, area_sqft, confidence: 0.95, notes });
   }
 
-  return { rows, totalWallArea, totalDoorArea, totalWindowArea };
+  return { rows };
 }
 
 Deno.serve(async (req: Request) => {
@@ -154,60 +107,50 @@ Deno.serve(async (req: Request) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      status: 405,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { projectFileId, roomId, storagePath } = await req.json();
-
-    if (!projectFileId || !roomId || !storagePath) {
-      return new Response(JSON.stringify({ 
-        success: false,
-        error: "MISSING_FIELDS",
-        message: "projectFileId, roomId, and storagePath are required"
-      }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+    const { job_id } = await req.json();
+    if (!job_id) {
+      return new Response(JSON.stringify({ error: "job_id is required" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Get job from project_files
-    const { data: projectFile, error: fileError } = await supabase
-      .from("project_files")
-      .select("processing_job_id, organization_id")
-      .eq("id", projectFileId)
+    // Get job — input_data has storage_path and room_id
+    const { data: job, error: jobError } = await supabase
+      .from("processing_jobs")
+      .select("*")
+      .eq("id", job_id)
       .single();
 
-    if (fileError || !projectFile) {
-      return new Response(JSON.stringify({ 
-        success: false,
-        error: "FILE_NOT_FOUND",
-        message: "Project file not found"
-      }), {
-        status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+    if (jobError || !job) {
+      return new Response(JSON.stringify({ error: "Job not found" }), {
+        status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const jobId = projectFile.processing_job_id;
-
-    // Update job status to processing
-    if (jobId) {
-      await supabase
-        .from("processing_jobs")
-        .update({ status: "processing", started_at: new Date().toISOString() })
-        .eq("id", jobId);
+    if (job.status !== "queued") {
+      return new Response(JSON.stringify({ error: `Job already processed (status: ${job.status})` }), {
+        status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    // Download CSV from storage
+    const inputData = job.input_data as Record<string, string | null>;
+    const storagePath = inputData.storage_path as string;
+    const roomId = inputData.room_id as string | null;
+
+    if (!storagePath) {
+      throw new Error("No storage_path in job input_data");
+    }
+
+    // Mark job + file as processing
+    await supabase.from("processing_jobs").update({ status: "processing", started_at: new Date().toISOString() }).eq("id", job_id);
+    await supabase.from("project_files").update({ processing_status: "processing" }).eq("id", job.project_file_id);
+
+    // Download CSV
     const { data: fileData, error: downloadError } = await supabase.storage
       .from("project-files")
       .download(storagePath);
@@ -216,158 +159,66 @@ Deno.serve(async (req: Request) => {
       throw new Error(`STORAGE_DOWNLOAD_FAILED: ${downloadError?.message}`);
     }
 
-    // Parse CSV content
     const csvText = await (fileData as Blob).text();
-    const { rows, totalWallArea, totalDoorArea, totalWindowArea } = parseCSVContent(csvText);
+    const { rows } = parseCSVContent(csvText);
 
     if (rows.length === 0) {
-      // Update job as failed
-      if (jobId) {
-        await supabase
-          .from("processing_jobs")
-          .update({ 
-            status: "failed", 
-            completed_at: new Date().toISOString(),
-            error_message: "CSV file is empty or has no data rows"
-          })
-          .eq("id", jobId);
-      }
-
-      return new Response(JSON.stringify({
-        success: false,
-        error: "NO_MEASUREMENTS_FOUND",
-        message: "CSV file contains no parseable measurement data"
-      }), {
-        status: 422,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      await supabase.from("processing_jobs").update({ status: "failed", completed_at: new Date().toISOString(), error_message: "CSV empty or unparseable" }).eq("id", job_id);
+      await supabase.from("project_files").update({ processing_status: "failed" }).eq("id", job.project_file_id);
+      return new Response(JSON.stringify({ error: "NO_MEASUREMENTS_FOUND", message: "CSV has no parseable data" }), {
+        status: 422, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Insert measurement records
-    const measurementRecords = rows.map(row => ({
-      room_id: roomId,
-      organization_id: projectFile.organization_id,
-      category: row.type === "wall" ? "wall" : row.type === "door" ? "trim" : row.type === "window" ? "trim" : "misc",
-      measurement_type: row.area_sqft ? "square_foot" : "linear_foot",
-      label: row.label,
-      value: row.area_sqft || row.length_ft || 0,
-      unit: row.area_sqft ? "sqft" : "lf",
-      source: "csv_import" as const,
-      confidence_score: row.confidence,
-      notes: row.notes,
-    }));
+    // Insert measurements — only use columns that exist in the schema
+    if (roomId) {
+      const measurementRecords = rows.map((row) => ({
+        room_id: roomId,
+        category: row.type === "wall" ? "wall" : row.type === "door" || row.type === "window" ? "trim" : "misc",
+        measurement_type: row.area_sqft ? "square_foot" : "linear_foot",
+        label: row.label,
+        value: row.area_sqft || row.length_ft || 0,
+        unit: row.area_sqft ? "sqft" : "lf",
+        source: "csv_import",
+        confidence_score: row.confidence,
+        notes: row.notes,
+      }));
 
-    const { error: insertError } = await supabase
-      .from("measurements")
-      .insert(measurementRecords);
-
-    if (insertError) {
-      console.error("Error inserting CSV measurements:", insertError);
-      throw new Error(`DB_INSERT_FAILED: ${insertError.message}`);
+      const { error: insertError } = await supabase.from("measurements").insert(measurementRecords);
+      if (insertError) throw new Error(`DB_INSERT_FAILED: ${insertError.message}`);
     }
 
-    // Update room with aggregated values
-    await supabase
-      .from("rooms")
-      .update({
-        gross_wall_area_sqft: totalWallArea,
-        net_wall_area_sqft: totalWallArea - totalDoorArea - totalWindowArea,
-        openings_total_area_sqft: totalDoorArea + totalWindowArea,
-        measurements_confidence: 0.95,
-        last_measured_at: new Date().toISOString(),
-      })
-      .eq("id", roomId);
+    // Mark completed
+    await supabase.from("processing_jobs").update({
+      status: "completed",
+      completed_at: new Date().toISOString(),
+      output_data: { rows_imported: rows.length },
+    }).eq("id", job_id);
 
-    // Update job as completed
-    if (jobId) {
-      await supabase
-        .from("processing_jobs")
-        .update({
-          status: "completed",
-          completed_at: new Date().toISOString(),
-          output_data: {
-            rows_imported: rows.length,
-            total_wall_area_sqft: totalWallArea,
-            total_door_area_sqft: totalDoorArea,
-            total_window_area_sqft: totalWindowArea,
-          },
-        })
-        .eq("id", jobId);
-    }
-
-    // Update project file status
-    await supabase
-      .from("project_files")
-      .update({ processing_status: "completed" })
-      .eq("id", projectFileId);
+    await supabase.from("project_files").update({ processing_status: "completed" }).eq("id", job.project_file_id);
 
     return new Response(JSON.stringify({
-      success: true,
-      projectFileId,
-      roomId,
-      jobId,
-      measurements: {
-        rows_imported: rows.length,
-        total_wall_area_sqft: totalWallArea,
-        total_door_area_sqft: totalDoorArea,
-        total_window_area_sqft: totalWindowArea,
-        net_wall_area_sqft: totalWallArea - totalDoorArea - totalWindowArea,
-      },
-      raw_rows: rows,
-      confidence: 0.95,
-    }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+      success: true, job_id, measurements_count: rows.length,
+    }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
   } catch (error) {
-    console.error("Error in extract-csv:", error);
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Error in extract-csv:", message);
 
-    // Try to update job status on failure
     try {
       const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
       const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
       const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-      const { projectFileId } = await req.json().catch(() => ({}));
-      
-      if (projectFileId) {
-        const { data: projectFile } = await supabase
-          .from("project_files")
-          .select("processing_job_id")
-          .eq("id", projectFileId)
-          .single();
-
-        if (projectFile?.processing_job_id) {
-          await supabase
-            .from("processing_jobs")
-            .update({ 
-              status: "failed", 
-              completed_at: new Date().toISOString(),
-              error_message: error instanceof Error ? error.message : "Unknown error"
-            })
-            .eq("id", projectFile.processing_job_id);
-        }
-
-        await supabase
-          .from("project_files")
-          .update({ 
-            processing_status: "failed",
-            processing_error: error instanceof Error ? error.message : "Unknown error"
-          })
-          .eq("id", projectFileId);
+      const { job_id } = await req.json().catch(() => ({}));
+      if (job_id) {
+        const { data: job } = await supabase.from("processing_jobs").select("project_file_id").eq("id", job_id).single();
+        await supabase.from("processing_jobs").update({ status: "failed", error_message: message }).eq("id", job_id);
+        await supabase.from("project_files").update({ processing_status: "failed", processing_error: message }).eq("id", job?.project_file_id);
       }
-    } catch (_) {
-      // Ignore cleanup errors
-    }
+    } catch (_) { /* ignore */ }
 
-    return new Response(JSON.stringify({
-      success: false,
-      error: "EXTRACTION_FAILED",
-      message: error instanceof Error ? error.message : "Unknown error",
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    return new Response(JSON.stringify({ error: message }), {
+      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });

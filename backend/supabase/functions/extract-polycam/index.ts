@@ -15,7 +15,7 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get("NEXT_PUBLIC_SUPABASE_URL")!;
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const openaiApiKey = Deno.env.get("OPENAI_API_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -360,7 +360,7 @@ Return JSON:
     console.error("Error in extract-polycam:", error);
 
     try {
-      const supabaseUrl = Deno.env.get("NEXT_PUBLIC_SUPABASE_URL")!;
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
       const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
       const supabase = createClient(supabaseUrl, supabaseServiceKey);
       const { job_id } = await req.json().catch(() => ({}));
