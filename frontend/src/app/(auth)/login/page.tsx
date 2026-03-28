@@ -51,49 +51,62 @@ export default function LoginPage() {
       className="min-h-screen flex items-center justify-center"
       style={{ background: '#0f111e' }}
     >
-      {/* Subtle background gradient */}
+      {/* Subtle radial glow */}
       <div style={{
         position: 'fixed', inset: 0, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse 600px 600px at 30% 30%, rgba(226,178,74,0.04) 0%, transparent 60%)',
+        background: 'radial-gradient(ellipse 500px 500px at 50% 40%, rgba(250,181,46,0.05) 0%, transparent 60%)',
       }} />
 
       <div className="relative z-10 w-full max-w-md px-4">
         {/* Header */}
         <div className="text-center mb-8">
           {/* Luna mark + wordmark */}
-          <div className="inline-flex items-center gap-3 mb-6">
+          <div className="inline-flex items-center gap-3 mb-5">
             <div
-              className="flex items-center justify-center rounded-xl"
-              style={{ width: '52px', height: '52px', background: '#e2b24a', boxShadow: '0 4px 16px rgba(226,178,74,0.3)' }}
+              style={{
+                width: '52px',
+                height: '52px',
+                borderRadius: '14px',
+                background: '#fab52e',
+                boxShadow: '0 4px 16px rgba(250,181,46,0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-                <path d="M12 3C7.5 3 3.5 7 3.5 12C3.5 17 7.5 21 12.5 21C14 21 15.5 20.5 16.5 19.5C14.5 18.5 13 16.5 13 14.5C13 12 15 10 17.5 10.5C18 7 15 3 12 3Z" fill="#0f111e"/>
+                <path d="M12 3C7.5 3 3.5 7 3.5 12C3.5 17 7.5 21 12.5 21C14 21 15.5 20.5 16.5 19.5C14.5 18.5 13 16.5 13 14.5C13 12 15 10 17.5 10.5C18 7 15 3 12 3Z" fill="#080d21"/>
               </svg>
             </div>
             <div className="text-left">
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 800, letterSpacing: '-0.02em', color: '#f0f4ff', lineHeight: 1 }}>LUNA</div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '9px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.18em', color: '#e2b24a', marginTop: '3px' }}>Estimator</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 800, letterSpacing: '-0.01em', color: '#ffffff', lineHeight: 1 }}>LUNA</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.18em', color: '#fab52e', marginTop: '4px' }}>Estimator</div>
             </div>
           </div>
-          <p style={{ fontSize: '14px', color: 'rgba(240,244,255,0.4)', fontFamily: 'var(--font-body)' }}>
+          <p style={{ fontSize: '14px', color: '#8a92a6', fontFamily: 'var(--font-body)' }}>
             Professional drywall & paint estimation
           </p>
         </div>
 
         {/* Card */}
         <div
-          className="card animate-fade-up"
-          style={{ animationDelay: '0.08s', animationFillMode: 'both', overflow: 'hidden' }}
+          style={{
+            background: '#1a1d2c',
+            border: '1px solid #31333f',
+            borderRadius: '16px',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.5)',
+            overflow: 'hidden',
+          }}
         >
           {/* Top accent line */}
-          <div style={{ height: '2px', background: 'linear-gradient(90deg, transparent, #e2b24a60, transparent)' }} />
+          <div style={{ height: '2px', background: 'linear-gradient(90deg, transparent, rgba(250,181,46,0.4), transparent)' }} />
 
           <div style={{ padding: '28px 32px' }}>
             <div className="mb-6">
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 700, color: '#f0f4ff', marginBottom: '4px' }}>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 700, color: '#ffffff', marginBottom: '4px' }}>
                 Sign in to your account
               </h2>
-              <p style={{ fontSize: '13px', color: 'rgba(240,244,255,0.4)' }}>
+              <p style={{ fontSize: '13px', color: '#8a92a6' }}>
                 Enter your credentials to continue
               </p>
             </div>
@@ -102,15 +115,15 @@ export default function LoginPage() {
               {error && (
                 <div style={{
                   padding: '10px 14px', borderRadius: '8px',
-                  background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)',
-                  fontSize: '13px', color: '#ef4444',
+                  background: 'rgba(235,87,87,0.08)', border: '1px solid rgba(235,87,87,0.2)',
+                  fontSize: '13px', color: '#eb5757',
                 }}>
                   {error}
                 </div>
               )}
 
               <div className="space-y-1.5">
-                <Label htmlFor="email" style={{ fontSize: '11px', fontFamily: 'var(--font-display)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'rgba(240,244,255,0.5)' }}>
+                <Label htmlFor="email" style={{ fontSize: '11px', fontFamily: 'var(--font-display)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#8a92a6' }}>
                   Email address
                 </Label>
                 <Input
@@ -119,19 +132,19 @@ export default function LoginPage() {
                   placeholder="you@company.com"
                   {...register("email")}
                   className="input"
-                  style={errors.email ? { borderColor: 'rgba(239,68,68,0.5)' } : {}}
+                  style={errors.email ? { borderColor: '#eb5757' } : {}}
                 />
                 {errors.email && (
-                  <p style={{ fontSize: '11px', color: '#ef4444', marginTop: '3px' }}>{errors.email.message}</p>
+                  <p style={{ fontSize: '11px', color: '#eb5757', marginTop: '3px' }}>{errors.email.message}</p>
                 )}
               </div>
 
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password" style={{ fontSize: '11px', fontFamily: 'var(--font-display)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'rgba(240,244,255,0.5)' }}>
+                  <Label htmlFor="password" style={{ fontSize: '11px', fontFamily: 'var(--font-display)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#8a92a6' }}>
                     Password
                   </Label>
-                  <Link href="/forgot-password" style={{ fontSize: '12px', color: '#e2b24a', opacity: 0.85, transition: 'opacity 0.15s' }}
+                  <Link href="/forgot-password" style={{ fontSize: '12px', color: '#fab52e', opacity: 0.85, transition: 'opacity 0.15s' }}
                     onMouseEnter={e => e.currentTarget.style.opacity = '1'}
                     onMouseLeave={e => e.currentTarget.style.opacity = '0.85'}
                   >
@@ -145,27 +158,35 @@ export default function LoginPage() {
                     placeholder="••••••••"
                     {...register("password")}
                     className="input"
-                    style={{ paddingRight: '2.75rem', ...(errors.password ? { borderColor: 'rgba(239,68,68,0.5)' } : {}) }}
+                    style={{ paddingRight: '2.75rem', ...(errors.password ? { borderColor: '#eb5757' } : {}) }}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(240,244,255,0.25)', transition: 'color 0.15s' }}
-                    onMouseEnter={e => e.currentTarget.style.color = 'rgba(240,244,255,0.5)'}
-                    onMouseLeave={e => e.currentTarget.style.color = 'rgba(240,244,255,0.25)'}
+                    style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#8a92a6', transition: 'color 0.15s' }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#e1e7f0'}
+                    onMouseLeave={e => e.currentTarget.style.color = '#8a92a6'}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
                 {errors.password && (
-                  <p style={{ fontSize: '11px', color: '#ef4444', marginTop: '3px' }}>{errors.password.message}</p>
+                  <p style={{ fontSize: '11px', color: '#eb5757', marginTop: '3px' }}>{errors.password.message}</p>
                 )}
               </div>
 
               <button
                 type="submit"
                 className="btn-primary w-full"
-                style={{ height: '44px', justifyContent: 'center', marginTop: '8px', fontSize: '14px', gap: '8px' }}
+                style={{
+                  height: '44px',
+                  justifyContent: 'center',
+                  marginTop: '8px',
+                  fontSize: '14px',
+                  gap: '8px',
+                  width: '100%',
+                  borderRadius: '8px',
+                }}
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -178,32 +199,32 @@ export default function LoginPage() {
 
             {/* Divider */}
             <div style={{ position: 'relative', margin: '20px 0' }}>
-              <div style={{ position: 'absolute', inset: '50% auto auto auto', width: '100%', height: '1px', background: 'rgba(255,255,255,0.06)', transform: 'translateY(-50%)' }} />
-              <div style={{ position: 'relative', width: '28px', height: '28px', borderRadius: '50%', background: '#1a1d2c', border: '1px solid rgba(255,255,255,0.06)', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Mail className="h-3 w-3" style={{ color: 'rgba(240,244,255,0.2)' }} />
+              <div style={{ position: 'absolute', inset: '50% auto auto auto', width: '100%', height: '1px', background: '#31333f', transform: 'translateY(-50%)' }} />
+              <div style={{ position: 'relative', width: '28px', height: '28px', borderRadius: '50%', background: '#1a1d2c', border: '1px solid #31333f', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Mail className="h-3 w-3" style={{ color: '#8a92a6' }} />
               </div>
             </div>
 
             {/* Magic link */}
             <Link href="/magic-link" style={{ display: 'block' }}>
-              <button type="button" className="btn-secondary w-full" style={{ height: '44px', justifyContent: 'center', fontSize: '14px' }}>
+              <button type="button" className="btn-secondary w-full" style={{ height: '44px', justifyContent: 'center', fontSize: '14px', width: '100%', borderRadius: '8px' }}>
                 Continue with Magic Link
               </button>
             </Link>
           </div>
 
           {/* Card footer */}
-          <div style={{ padding: '14px 32px', borderTop: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
-            <p style={{ fontSize: '13px', color: 'rgba(240,244,255,0.4)' }}>
+          <div style={{ padding: '14px 32px', borderTop: '1px solid #31333f', textAlign: 'center' }}>
+            <p style={{ fontSize: '13px', color: '#8a92a6' }}>
               No account yet?{' '}
-              <Link href="/signup" style={{ color: '#e2b24a', fontWeight: 600, fontFamily: 'var(--font-display)' }}>
+              <Link href="/signup" style={{ color: '#fab52e', fontWeight: 600, fontFamily: 'var(--font-display)' }}>
                 Create one
               </Link>
             </p>
           </div>
         </div>
 
-        <p style={{ textAlign: 'center', fontSize: '11px', color: 'rgba(240,244,255,0.15)', marginTop: '24px' }}>
+        <p style={{ textAlign: 'center', fontSize: '11px', color: 'rgba(138,146,166,0.5)', marginTop: '24px' }}>
           Coastal Solutions Media · lunaestimator.com
         </p>
       </div>

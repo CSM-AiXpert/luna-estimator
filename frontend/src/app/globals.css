@@ -1,44 +1,55 @@
 /* =============================================================================
    LUNA ESTIMATOR — Premium Design System
-   Aesthetic: Dark luxury SaaS / construction precision
-   Accent: Gold/amber · Background: Dark charcoal · Solid cards (no glass)
+   Exact color palette from Brian's reference screenshots
    ============================================================================= */
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 :root {
   /* Background layers */
-  --bg-void: #080a10;
-  --bg-primary: #0f111e;
+  --bg-void: #0f111e;
+  --bg-primary: #12141f;
   --bg-surface: #1a1d2c;
   --bg-elevated: #1e2130;
-  --bg-card: #20232b;
+  --bg-card: #1a1d2c;
+
+  /* Sidebar (slightly lighter) */
+  --bg-sidebar: #1a1d2c;
 
   /* Borders */
-  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-subtle: rgba(255, 255, 255, 0.05);
   --border-default: rgba(255, 255, 255, 0.09);
-  --border-strong: rgba(255, 255, 255, 0.14);
+  --border-strong: #31333f;
+  --border-card: #31333f;
 
-  /* Accent — Gold/Amber */
-  --accent-gold: #e2b24a;
-  --accent-gold-bright: #f0b345;
-  --accent-gold-dim: rgba(226, 178, 74, 0.12);
-  --accent-gold-glow: rgba(226, 178, 74, 0.2);
+  /* Accent — Gold/Amber — EXACT from screenshots */
+  --accent-gold: #fab52e;
+  --accent-gold-dark: #d49d2c;
+  --accent-gold-dim: rgba(250, 181, 46, 0.12);
+  --accent-gold-text: #080d21;
+
+  /* Status accent colors */
+  --accent-blue: #4f70f0;
+  --accent-purple: #6e52ed;
+  --accent-green: #27ae60;
+  --accent-red: #eb5757;
+  --accent-orange: #d49d2c;
 
   /* Text */
-  --text-primary: #f0f4ff;
-  --text-secondary: rgba(240, 244, 255, 0.65);
-  --text-muted: rgba(240, 244, 255, 0.4);
+  --text-primary: #ffffff;
+  --text-secondary: #e1e7f0;
+  --text-muted: #8a92a6;
+  --text-disabled: rgba(240, 244, 255, 0.22);
 
   /* Status */
-  --success: #10b981;
-  --success-bg: rgba(16, 185, 129, 0.12);
-  --warning: #f59e0b;
-  --warning-bg: rgba(245, 158, 11, 0.12);
-  --error: #ef4444;
-  --error-bg: rgba(239, 68, 68, 0.12);
-  --info: #6366f1;
-  --info-bg: rgba(99, 102, 241, 0.12);
+  --success: #27ae60;
+  --success-bg: rgba(39, 174, 96, 0.12);
+  --warning: #d49d2c;
+  --warning-bg: rgba(212, 157, 44, 0.12);
+  --error: #eb5757;
+  --error-bg: rgba(235, 87, 87, 0.12);
+  --info: #4f70f0;
+  --info-bg: rgba(79, 112, 240, 0.12);
 
   /* Typography */
   --font-display: 'Syne', system-ui, sans-serif;
@@ -54,7 +65,7 @@
   /* Shadows */
   --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-card-hover: 0 4px 24px rgba(0, 0, 0, 0.6);
-  --shadow-gold: 0 0 24px rgba(226, 178, 74, 0.15);
+  --shadow-gold: 0 4px 16px rgba(250, 181, 46, 0.25);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -99,11 +110,11 @@ h4 { font-size: 1.05rem; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
 
 /* =============================================================================
-   Card — solid dark panel (NOT glass)
+   Card — solid dark panel
    ============================================================================= */
 .card {
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-card);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
 }
@@ -111,17 +122,14 @@ h4 { font-size: 1.05rem; }
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .card-hover:hover {
-  border-color: var(--border-default);
+  border-color: var(--border-strong);
   box-shadow: var(--shadow-card-hover);
 }
 
 /* =============================================================================
    Page & Section Layout
    ============================================================================= */
-.page-content {
-  padding: 28px 32px;
-  max-width: 1400px;
-}
+.page-content { padding: 28px 32px; }
 .section-header {
   display: flex;
   align-items: center;
@@ -135,10 +143,7 @@ h4 { font-size: 1.05rem; }
   color: var(--text-primary);
   margin-bottom: 2px;
 }
-.section-subtitle {
-  font-size: 13px;
-  color: var(--text-muted);
-}
+.section-subtitle { font-size: 13px; color: var(--text-muted); }
 
 /* =============================================================================
    Buttons
@@ -148,8 +153,8 @@ h4 { font-size: 1.05rem; }
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  background: var(--accent-gold-bright);
-  color: #0f111e;
+  background: var(--accent-gold);
+  color: var(--accent-gold-text);
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 13px;
@@ -170,7 +175,7 @@ h4 { font-size: 1.05rem; }
   gap: 6px;
   padding: 8px 16px;
   background: var(--bg-elevated);
-  color: var(--text-primary);
+  color: var(--text-secondary);
   font-family: var(--font-display);
   font-weight: 600;
   font-size: 13px;
@@ -181,7 +186,7 @@ h4 { font-size: 1.05rem; }
   text-decoration: none;
   white-space: nowrap;
 }
-.btn-secondary:hover { background: #262a3a; border-color: rgba(255,255,255,0.2); }
+.btn-secondary:hover { background: #262a3a; border-color: rgba(255,255,255,0.18); }
 .btn-secondary:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .btn-ghost {
@@ -190,7 +195,7 @@ h4 { font-size: 1.05rem; }
   gap: 6px;
   padding: 8px 16px;
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-family: var(--font-display);
   font-weight: 600;
   font-size: 13px;
@@ -210,7 +215,7 @@ h4 { font-size: 1.05rem; }
 .input {
   width: 100%;
   padding: 8px 12px;
-  background: var(--bg-void);
+  background: #1a202a;
   color: var(--text-primary);
   font-family: var(--font-body);
   font-size: 14px;
@@ -238,26 +243,22 @@ h4 { font-size: 1.05rem; }
   border-radius: 99px;
   white-space: nowrap;
 }
-.badge-gold { background: var(--accent-gold-dim); color: var(--accent-gold); border: 1px solid rgba(226,178,74,0.25); }
-.badge-success { background: var(--success-bg); color: var(--success); }
-.badge-warning { background: var(--warning-bg); color: var(--warning); }
-.badge-error { background: var(--error-bg); color: var(--error); }
-.badge-info { background: var(--info-bg); color: var(--info); }
+.badge-gold { background: var(--accent-gold); color: var(--accent-gold-text); }
+.badge-success { background: var(--success-bg); color: var(--success); border: 1px solid rgba(39,174,96,0.2); }
+.badge-warning { background: var(--warning-bg); color: var(--warning); border: 1px solid rgba(212,157,44,0.2); }
+.badge-error { background: var(--error-bg); color: var(--error); border: 1px solid rgba(235,87,87,0.2); }
+.badge-info { background: var(--info-bg); color: var(--info); border: 1px solid rgba(79,112,240,0.2); }
 .badge-muted { background: rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid var(--border-subtle); }
-
-/* Status-specific (from screenshots) */
-.badge-in-progress { background: rgba(39, 150, 121, 0.15); color: #279679; }
-.badge-intake { background: rgba(109, 114, 171, 0.2); color: #8b8fc7; }
-.badge-sent { background: transparent; color: var(--accent-gold); border: 1px solid var(--accent-gold); }
-.badge-in-estimate { background: rgba(75, 81, 135, 0.25); color: #6b73b8; }
-.badge-completed { background: var(--success-bg); color: var(--success); }
+.badge-outline-gold { background: transparent; color: var(--accent-gold); border: 1px solid var(--accent-gold); }
+.badge-intake { background: rgba(110,82,237,0.15); color: #8b7fd4; }
+.badge-in-progress { background: rgba(39,174,96,0.12); color: #27ae60; }
 
 /* =============================================================================
    Stat Card
    ============================================================================= */
 .stat-card {
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-card);
   border-radius: var(--radius-lg);
   padding: 18px 20px;
   box-shadow: var(--shadow-card);
@@ -287,16 +288,13 @@ h4 { font-size: 1.05rem; }
    ============================================================================= */
 .table-wrap {
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-card);
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-card);
 }
 .table-wrap table { width: 100%; border-collapse: collapse; }
-.table-wrap thead {
-  background: var(--bg-elevated);
-  border-bottom: 1px solid var(--border-subtle);
-}
+.table-wrap thead { background: var(--bg-elevated); border-bottom: 1px solid var(--border-subtle); }
 .table-wrap th {
   padding: 10px 14px;
   font-family: var(--font-display);
@@ -351,7 +349,7 @@ h4 { font-size: 1.05rem; }
   bottom: 16px;
   right: 16px;
   background: var(--accent-gold);
-  color: #0f111e;
+  color: var(--accent-gold-text);
   font-family: var(--font-display);
   font-size: 12px;
   font-weight: 700;
@@ -359,11 +357,4 @@ h4 { font-size: 1.05rem; }
   border-radius: var(--radius);
   z-index: 9999;
   box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-}
-
-/* =============================================================================
-   Demo Mode Disable (override any element-based demo notices)
-   ============================================================================= */
-.demo-notice {
-  display: none !important;
 }

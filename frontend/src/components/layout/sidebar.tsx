@@ -8,12 +8,9 @@ import {
   FolderKanban,
   Settings,
   LogOut,
-  Building2,
   ChevronDown,
   Ruler,
 } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,101 +46,100 @@ export function Sidebar({ user, organization }: SidebarProps) {
       className="h-screen flex flex-col"
       style={{
         width: '220px',
-        background: '#10111d',
-        borderRight: '1px solid rgba(255,255,255,0.06)',
+        background: '#1a1d2c',
+        borderRight: '1px solid #31333f',
       }}
     >
       {/* Logo */}
       <div
         className="flex items-center gap-3 px-5"
-        style={{ height: '68px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+        style={{ height: '64px', borderBottom: '1px solid #31333f' }}
       >
-        {/* Luna mark */}
+        {/* Luna mark — gold crescent */}
         <div
           className="flex items-center justify-center rounded-xl"
           style={{
-            width: '36px',
-            height: '36px',
-            background: '#e2b24a',
-            boxShadow: '0 2px 8px rgba(226,178,74,0.3)',
+            width: '34px',
+            height: '34px',
+            background: '#fab52e',
+            boxShadow: '0 2px 8px rgba(250,181,46,0.3)',
+            flexShrink: 0,
           }}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M12 3C7.5 3 3.5 7 3.5 12C3.5 17 7.5 21 12.5 21C14 21 15.5 20.5 16.5 19.5C14.5 18.5 13 16.5 13 14.5C13 12 15 10 17.5 10.5C18 7 15 3 12 3Z" fill="#0f111e"/>
+            <path d="M12 3C7.5 3 3.5 7 3.5 12C3.5 17 7.5 21 12.5 21C14 21 15.5 20.5 16.5 19.5C14.5 18.5 13 16.5 13 14.5C13 12 15 10 17.5 10.5C18 7 15 3 12 3Z" fill="#080d21"/>
           </svg>
         </div>
         <div>
           <div
-            className="font-bold tracking-tight"
-            style={{ fontFamily: 'var(--font-display)', fontSize: '15px', color: 'var(--text-primary)' }}
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: '14px',
+              fontWeight: 800,
+              letterSpacing: '0.05em',
+              color: '#ffffff',
+              lineHeight: 1,
+            }}
           >
             LUNA
           </div>
           <div
-            className="uppercase tracking-widest"
-            style={{ fontSize: '9px', color: '#e2b24a', letterSpacing: '0.15em' }}
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: '9px',
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '0.15em',
+              color: '#fab52e',
+              marginTop: '3px',
+            }}
           >
             Estimator
           </div>
         </div>
-        {/* Ambient glow dot */}
-        <div
-          style={{
-            marginLeft: 'auto',
-            width: '6px',
-            height: '6px',
-            borderRadius: '50%',
-            background: '#10b981',
-            boxShadow: '0 0 8px #10b981',
-            animation: 'pulse-glow 2s ease-in-out infinite',
-          }}
-        />
       </div>
 
       {/* Org context */}
       <div
         className="px-3 py-3"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+        style={{ borderBottom: '1px solid #31333f' }}
       >
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full justify-between text-left h-auto py-1.5 px-3 rounded-lg"
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+            <button
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-colors"
+              style={{
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid #31333f',
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}
             >
-              <div className="flex flex-col items-start min-w-0 flex-1">
-                <span style={{ fontSize: '10px', color: 'rgba(240,244,255,0.35)', fontFamily: 'var(--font-display)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <div className="flex flex-col items-start flex-1 min-w-0">
+                <span style={{ fontFamily: 'var(--font-display)', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#8a92a6' }}>
                   Organization
                 </span>
-                <span
-                  className="text-sm truncate"
-                  style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)', fontWeight: 500 }}
-                >
-                  {organization?.name ?? "No org"}
+                <span style={{ fontFamily: 'var(--font-display)', fontSize: '13px', fontWeight: 600, color: '#ffffff', marginTop: '1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {organization?.name ?? 'Luna Drywall & Painting'}
                 </span>
               </div>
-              <ChevronDown
-                className="h-3.5 w-3.5 flex-shrink-0"
-                style={{ color: 'rgba(240,244,255,0.35)' }}
-              />
-            </Button>
+              <ChevronDown className="h-3.5 w-3.5 flex-shrink-0" style={{ color: '#8a92a6' }} />
+            </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="rounded-xl p-1"
-            style={{ background: 'rgba(13,18,36,0.98)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(24px)' }}
+            style={{ background: '#1a1d2c', border: '1px solid #31333f', minWidth: '180px' }}
           >
             <DropdownMenuItem
               className="rounded-lg px-3 py-2 cursor-pointer"
-              style={{ fontSize: '14px', color: 'var(--text-secondary)' }}
+              style={{ fontSize: '14px', color: '#e1e7f0' }}
             >
               Switch Organization
             </DropdownMenuItem>
-            <DropdownMenuSeparator style={{ background: 'rgba(255,255,255,0.06)', margin: '4px 0' }} />
+            <DropdownMenuSeparator style={{ background: '#31333f', margin: '4px 0' }} />
             <DropdownMenuItem
               className="rounded-lg px-3 py-2 cursor-pointer"
-              style={{ fontSize: '14px', color: 'var(--text-secondary)' }}
+              style={{ fontSize: '14px', color: '#e1e7f0' }}
             >
               Organization Settings
             </DropdownMenuItem>
@@ -164,54 +160,39 @@ export function Sidebar({ user, organization }: SidebarProps) {
               style={
                 active
                   ? {
-                      background: 'rgba(226,178,74,0.12)',
-                      border: '1px solid rgba(226,178,74,0.2)',
-                      color: 'var(--text-primary)',
+                      background: '#fab52e',
+                      color: '#080d21',
                     }
                   : {
                       background: 'transparent',
-                      border: '1px solid transparent',
-                      color: 'rgba(240,244,255,0.5)',
+                      color: '#8a92a6',
                     }
               }
               onMouseEnter={(e) => {
                 if (!active) {
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
-                  e.currentTarget.style.color = 'rgba(240,244,255,0.8)'
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
+                  e.currentTarget.style.color = '#e1e7f0'
                 }
               }}
               onMouseLeave={(e) => {
                 if (!active) {
                   e.currentTarget.style.background = 'transparent'
-                  e.currentTarget.style.color = 'rgba(240,244,255,0.5)'
+                  e.currentTarget.style.color = '#8a92a6'
                 }
               }}
             >
               <Icon
                 className="h-4 w-4 flex-shrink-0"
-                style={active ? { color: '#e2b24a' } : {}}
               />
               <span
                 style={{
                   fontFamily: 'var(--font-display)',
-                  fontWeight: active ? 600 : 500,
+                  fontWeight: active ? 700 : 600,
                   fontSize: '14px',
                 }}
               >
                 {item.label}
               </span>
-              {active && (
-                <div
-                  style={{
-                    marginLeft: 'auto',
-                    width: '5px',
-                    height: '5px',
-                    borderRadius: '50%',
-                    background: '#e2b24a',
-                    boxShadow: '0 0 6px #e2b24a',
-                  }}
-                />
-              )}
             </Link>
           )
         })}
@@ -220,29 +201,28 @@ export function Sidebar({ user, organization }: SidebarProps) {
       {/* User menu */}
       <div
         className="p-3"
-        style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
+        style={{ borderTop: '1px solid #31333f' }}
       >
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-3 rounded-xl"
+            <button
+              className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors"
               style={{
-                height: 'auto',
-                padding: '10px',
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.06)',
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid #31333f',
+                cursor: 'pointer',
+                width: '100%',
               }}
             >
               <div
                 className="flex items-center justify-center rounded-full flex-shrink-0"
                 style={{
-                  width: '34px',
-                  height: '34px',
-                  background: '#2b354c',
+                  width: '32px',
+                  height: '32px',
+                  background: '#31333f',
                   fontSize: '12px',
                   fontWeight: 700,
-                  color: '#f0f4ff',
+                  color: '#ffffff',
                   fontFamily: 'var(--font-display)',
                 }}
               >
@@ -253,43 +233,40 @@ export function Sidebar({ user, organization }: SidebarProps) {
               <div className="flex flex-col items-start flex-1 min-w-0">
                 <span
                   className="text-sm truncate"
-                  style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)', fontWeight: 500 }}
+                  style={{ fontFamily: 'var(--font-display)', fontWeight: 600, color: '#ffffff' }}
                 >
                   {user?.full_name ?? user?.email ?? 'User'}
                 </span>
                 <span
                   className="text-xs capitalize"
-                  style={{ color: 'rgba(240,244,255,0.35)' }}
+                  style={{ color: '#8a92a6', fontFamily: 'var(--font-display)', fontWeight: 500 }}
                 >
                   {user?.role ?? 'member'}
                 </span>
               </div>
-              <ChevronDown
-                className="h-3.5 w-3.5 flex-shrink-0"
-                style={{ color: 'rgba(240,244,255,0.35)' }}
-              />
-            </Button>
+              <ChevronDown className="h-3.5 w-3.5 flex-shrink-0" style={{ color: '#8a92a6' }} />
+            </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="rounded-xl p-1"
-            style={{ background: 'rgba(13,18,36,0.98)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(24px)', minWidth: '180px' }}
+            style={{ background: '#1a1d2c', border: '1px solid #31333f', minWidth: '180px' }}
           >
             <DropdownMenuItem
               className="rounded-lg px-3 py-2 cursor-pointer"
-              style={{ fontSize: '14px', color: 'var(--text-secondary)' }}
+              style={{ fontSize: '14px', color: '#e1e7f0' }}
             >
               Profile
             </DropdownMenuItem>
             <DropdownMenuItem
               className="rounded-lg px-3 py-2 cursor-pointer"
-              style={{ fontSize: '14px', color: 'var(--text-secondary)' }}
+              style={{ fontSize: '14px', color: '#e1e7f0' }}
             >
               Settings
             </DropdownMenuItem>
-            <DropdownMenuSeparator style={{ background: 'rgba(255,255,255,0.06)', margin: '4px 0' }} />
+            <DropdownMenuSeparator style={{ background: '#31333f', margin: '4px 0' }} />
             <DropdownMenuItem
               className="rounded-lg px-3 py-2 cursor-pointer"
-              style={{ fontSize: '14px', color: 'rgba(239,68,68,0.8)' }}
+              style={{ fontSize: '14px', color: '#eb5757' }}
             >
               <LogOut className="h-4 w-4 mr-2" />
               Sign Out
