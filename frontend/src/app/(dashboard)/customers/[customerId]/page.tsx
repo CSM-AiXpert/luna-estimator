@@ -225,7 +225,7 @@ function CustomerDetailInner({ customerId }: { customerId: string }) {
               const statusClass =
                 project.status === "completed"
                   ? "badge badge-success"
-                  : project.status === "in_progress" || project.status === "active"
+                  : project.status === "active"
                   ? "badge badge-gold"
                   : project.status === "cancelled"
                   ? "badge badge-error"
