@@ -12,9 +12,8 @@ export function getSupabaseClient() {
 export const supabase = getSupabaseClient()
 
 export function createServerSupabaseClient(cookies: { getAll: () => { name: string; value: string }[] }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { createServerClient } = require("@supabase/ssr") as { createServerClient: any }
-  return createServerClient(
+  const { createServerClient } = require("@supabase/ssr")
+  return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
