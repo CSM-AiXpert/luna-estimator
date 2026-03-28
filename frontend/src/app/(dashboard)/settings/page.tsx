@@ -37,7 +37,7 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen">
       {/* Sticky Glass Header */}
-      <div className="sticky top-0 z-30 backdrop-blur-xl border-b border-white/[0.05] bg-[#0a0e1a]/80 px-8 py-5">
+      <div className="sticky top-0 z-30 backdrop-blur-xl border-b border-white/[0.05] bg-[#12141f]/80 px-8 py-5">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-white" style={{ fontFamily: "var(--font-display)" }}>

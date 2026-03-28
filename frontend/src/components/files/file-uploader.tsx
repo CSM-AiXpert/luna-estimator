@@ -122,7 +122,7 @@ export function FileUploader({ projectId, roomId }: FileUploaderProps) {
   }
 
   const FILE_TYPE_ICONS: Record<string, React.ReactNode> = {
-    image: <Image className="h-5 w-5 text-[#00d4ff]" />,
+    image: <Image className="h-5 w-5 text-[#fab52e]" />,
     pdf: <FileText className="h-5 w-5 text-red-400" />,
     model: <Box className="h-5 w-5 text-purple-400" />,
   }
@@ -136,7 +136,7 @@ export function FileUploader({ projectId, roomId }: FileUploaderProps) {
         className={cn(
           "border-2 border-dashed rounded-xl p-10 text-center transition-all cursor-pointer",
           isDragging
-            ? "border-[#00d4ff] bg-[#00d4ff]/5"
+            ? "border-[#fab52e] bg-[#fab52e]/5"
             : "border-white/10 hover:border-white/20 hover:bg-white/[0.02]"
         )}
         onClick={() => document.getElementById("file-input")?.click()}
@@ -144,7 +144,7 @@ export function FileUploader({ projectId, roomId }: FileUploaderProps) {
         <Upload className="h-10 w-10 mx-auto mb-3 text-white/30" />
         <p className="text-white/50 text-sm">
           Drag & drop files here, or{" "}
-          <span className="text-[#00d4ff]">browse</span>
+          <span className="text-[#fab52e]">browse</span>
         </p>
         <p className="text-white/20 text-xs mt-1">JPEG, PNG, HEIC, PDF, OBJ, GLTF, PLY</p>
         <input
@@ -159,7 +159,7 @@ export function FileUploader({ projectId, roomId }: FileUploaderProps) {
 
       {createFile.isPending && (
         <div className="flex items-center gap-3 text-sm text-white/50">
-          <Loader2 className="h-4 w-4 animate-spin text-[#00d4ff]" />
+          <Loader2 className="h-4 w-4 animate-spin text-[#fab52e]" />
           Uploading...
         </div>
       )}

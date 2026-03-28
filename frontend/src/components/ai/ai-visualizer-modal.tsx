@@ -94,7 +94,7 @@ export function AiVisualizerModal({
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Wand2 className="h-5 w-5 text-[#00d4ff]" />
+            <Wand2 className="h-5 w-5 text-[#fab52e]" />
             AI Visualizer
           </DialogTitle>
           <DialogDescription>{imageName}</DialogDescription>
@@ -120,7 +120,7 @@ export function AiVisualizerModal({
               <div className="relative aspect-video rounded-lg overflow-hidden bg-white/5 border border-white/10 flex items-center justify-center">
                 {state === "loading" && (
                   <div className="flex flex-col items-center gap-2">
-                    <Loader2 className="h-8 w-8 animate-spin text-[#00d4ff]" />
+                    <Loader2 className="h-8 w-8 animate-spin text-[#fab52e]" />
                     <p className="text-xs text-white/40">Generating preview...</p>
                   </div>
                 )}

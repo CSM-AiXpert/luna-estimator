@@ -123,7 +123,7 @@ export function Providers({ children }: { children: ReactNode }) {
 
   if (!loaded) {
     return (
-      <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center">
+      <div className="min-h-screen bg-[#12141f] flex items-center justify-center">
         <div className="text-white/50">Loading...</div>
       </div>
     )

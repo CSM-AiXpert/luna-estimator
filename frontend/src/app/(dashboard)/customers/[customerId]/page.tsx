@@ -70,7 +70,7 @@ function CustomerDetailInner({ customerId }: { customerId: string }) {
   if (customerLoading) {
     return (
       <div className="min-h-screen">
-        <div className="sticky top-0 z-30 backdrop-blur-xl border-b border-white/[0.05] bg-[#0a0e1a]/80 px-8 py-5">
+        <div className="sticky top-0 z-30 backdrop-blur-xl border-b border-white/[0.05] bg-[#12141f]/80 px-8 py-5">
           <div className="skeleton h-8 w-48 rounded" />
         </div>
         <div className="px-8 pt-6">
@@ -102,7 +102,7 @@ function CustomerDetailInner({ customerId }: { customerId: string }) {
   return (
     <div className="min-h-screen">
       {/* Sticky Glass Header */}
-      <div className="sticky top-0 z-30 backdrop-blur-xl border-b border-white/[0.05] bg-[#0a0e1a]/80 px-8 py-5">
+      <div className="sticky top-0 z-30 backdrop-blur-xl border-b border-white/[0.05] bg-[#12141f]/80 px-8 py-5">
         <div className="flex items-center gap-4">
           <Link href="/customers">
             <Button variant="ghost" size="icon" className="btn-ghost">

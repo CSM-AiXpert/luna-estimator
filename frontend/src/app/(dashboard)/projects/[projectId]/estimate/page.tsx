@@ -87,7 +87,7 @@ function EstimatePageInner({ projectId }: { projectId: string }) {
   if (isLoading) {
     return (
       <div className="min-h-screen">
-        <div className="sticky top-0 z-30 backdrop-blur-xl border-b border-white/[0.05] bg-[#0a0e1a]/80 px-8 py-5">
+        <div className="sticky top-0 z-30 backdrop-blur-xl border-b border-white/[0.05] bg-[#12141f]/80 px-8 py-5">
           <div className="skeleton h-8 w-64 rounded" />
         </div>
         <div className="px-8 pt-6">
@@ -133,7 +133,7 @@ function EstimatePageInner({ projectId }: { projectId: string }) {
   return (
     <div className="min-h-screen">
       {/* Sticky Glass Header */}
-      <div className="sticky top-0 z-30 backdrop-blur-xl border-b border-white/[0.05] bg-[#0a0e1a]/80 px-8 py-5">
+      <div className="sticky top-0 z-30 backdrop-blur-xl border-b border-white/[0.05] bg-[#12141f]/80 px-8 py-5">
         <div className="flex items-center gap-4">
           <Link href={`/projects/${projectId}`}>
             <Button variant="ghost" size="icon" className="btn-ghost">
