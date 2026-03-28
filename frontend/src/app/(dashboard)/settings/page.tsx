@@ -51,13 +51,13 @@ export default function SettingsPage() {
       <div className="px-8 pt-6 pb-8 max-w-2xl animate-fade-up">
         <form onSubmit={handleSave} className="space-y-6">
           {/* Organization Card */}
-          <Card className="glass">
+          <Card className="card">
             <CardHeader className="pb-4">
               <CardTitle
                 className="flex items-center gap-2 text-base"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                <Globe className="h-4 w-4 text-[#00d4ff]" />
+                <Globe className="h-4 w-4 text-[#e2b24a]" />
                 Organization
               </CardTitle>
             </CardHeader>
@@ -75,13 +75,13 @@ export default function SettingsPage() {
           </Card>
 
           {/* Timezone Card */}
-          <Card className="glass">
+          <Card className="card">
             <CardHeader className="pb-4">
               <CardTitle
                 className="flex items-center gap-2 text-base"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                <Clock className="h-4 w-4 text-[#00d4ff]" />
+                <Clock className="h-4 w-4 text-[#e2b24a]" />
                 Timezone
               </CardTitle>
             </CardHeader>

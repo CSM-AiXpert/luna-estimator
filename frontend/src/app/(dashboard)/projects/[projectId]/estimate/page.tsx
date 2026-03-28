@@ -125,7 +125,7 @@ function EstimatePageInner({ projectId }: { projectId: string }) {
     estimate?.status === "approved"
       ? "badge badge-success"
       : estimate?.status === "sent"
-      ? "badge badge-cyan"
+      ? "badge badge-gold"
       : estimate?.status === "rejected"
       ? "badge badge-error"
       : estimate?.status === "pending"
@@ -156,7 +156,7 @@ function EstimatePageInner({ projectId }: { projectId: string }) {
               )}
             </h1>
             {typedProject?.customer && (
-              <p className="text-sm text-[#00d4ff]">{typedProject.customer.name}</p>
+              <p className="text-sm text-[#e2b24a]">{typedProject.customer.name}</p>
             )}
           </div>
           {estimate && (
@@ -207,9 +207,9 @@ function EstimatePageInner({ projectId }: { projectId: string }) {
 
       <div className="px-8 pt-6 pb-8 animate-fade-up">
         {!estimate ? (
-          <div className="glass text-center py-24 rounded-xl">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[rgba(0,212,255,0.08)] mx-auto mb-5">
-              <DollarSign className="h-8 w-8 text-[rgba(0,212,255,0.4)]" />
+          <div className="card">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[rgba(226, 178, 74,0.08)] mx-auto mb-5">
+              <DollarSign className="h-8 w-8 text-[rgba(226, 178, 74,0.4)]" />
             </div>
             <h3
               className="text-lg font-semibold text-white mb-2"
@@ -231,9 +231,9 @@ function EstimatePageInner({ projectId }: { projectId: string }) {
             {/* Rooms Accordion */}
             <div className="col-span-2 space-y-4">
               {rooms.length === 0 ? (
-                <div className="glass text-center py-16 rounded-xl">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[rgba(0,212,255,0.08)] mx-auto mb-5">
-                    <Ruler className="h-8 w-8 text-[rgba(0,212,255,0.4)]" />
+                <div className="card">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[rgba(226, 178, 74,0.08)] mx-auto mb-5">
+                    <Ruler className="h-8 w-8 text-[rgba(226, 178, 74,0.4)]" />
                   </div>
                   <h3
                     className="text-lg font-semibold text-white mb-2"
@@ -254,7 +254,7 @@ function EstimatePageInner({ projectId }: { projectId: string }) {
                   )
                   const isExpanded = expandedRooms.has(room.id)
                   return (
-                    <Card key={room.id} className="glass overflow-hidden">
+                    <Card key={room.id} className="card">
                       <button
                         className="w-full text-left"
                         onClick={() => toggleRoom(room.id)}
@@ -266,13 +266,13 @@ function EstimatePageInner({ projectId }: { projectId: string }) {
                             ) : (
                               <ChevronRight className="h-4 w-4 text-[rgba(240,244,255,0.4)]" />
                             )}
-                            <Ruler className="h-4 w-4 text-[#00d4ff]" />
+                            <Ruler className="h-4 w-4 text-[#e2b24a]" />
                             <span className="font-semibold text-white" style={{ fontFamily: "var(--font-display)" }}>
                               {room.name}
                             </span>
                             <Badge className="badge badge-muted text-xs">{items.length} items</Badge>
                           </div>
-                          <span className="text-[#00d4ff] font-semibold">
+                          <span className="text-[#e2b24a] font-semibold">
                             {formatCurrency(roomTotal)}
                           </span>
                         </CardContent>
@@ -314,7 +314,7 @@ function EstimatePageInner({ projectId }: { projectId: string }) {
                                       {item.unit && <span className="mr-1">{item.unit} × </span>}
                                       {item.quantity}
                                     </td>
-                                    <td className="px-4 py-3 text-right text-[#00d4ff] font-medium text-sm">
+                                    <td className="px-4 py-3 text-right text-[#e2b24a] font-medium text-sm">
                                       {formatCurrency(item.total_cost)}
                                     </td>
                                   </tr>
@@ -332,7 +332,7 @@ function EstimatePageInner({ projectId }: { projectId: string }) {
 
             {/* Totals Sidebar */}
             <div className="space-y-4">
-              <Card className="glass stat-card">
+              <Card className="card">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base" style={{ fontFamily: "var(--font-display)" }}>
                     Totals
@@ -373,18 +373,18 @@ function EstimatePageInner({ projectId }: { projectId: string }) {
                   </div>
                   <div className="border-t border-white/[0.08] pt-2 flex justify-between font-semibold text-base">
                     <span className="text-white">Grand Total</span>
-                    <span className="text-[#00d4ff]">{formatCurrency(total)}</span>
+                    <span className="text-[#e2b24a]">{formatCurrency(total)}</span>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="glass">
+              <Card className="card">
                 <CardHeader className="pb-3">
                   <CardTitle
                     className="text-base flex items-center gap-2"
                     style={{ fontFamily: "var(--font-display)" }}
                   >
-                    <Link2 className="h-4 w-4 text-[#00d4ff]" />
+                    <Link2 className="h-4 w-4 text-[#e2b24a]" />
                     GHL Sync
                   </CardTitle>
                 </CardHeader>
@@ -397,7 +397,7 @@ function EstimatePageInner({ projectId }: { projectId: string }) {
               </Card>
 
               {estimate.sent_at && (
-                <Card className="glass">
+                <Card className="card">
                   <CardContent className="p-4 text-xs text-[rgba(240,244,255,0.3)] space-y-1">
                     <p>Sent: {formatDate(estimate.sent_at)}</p>
                     {estimate.approved_at && <p>Approved: {formatDate(estimate.approved_at)}</p>}

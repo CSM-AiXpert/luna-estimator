@@ -127,11 +127,11 @@ function CustomerDetailInner({ customerId }: { customerId: string }) {
       <div className="px-8 pt-6 pb-8 animate-fade-up">
         {/* Contact Info Cards */}
         <div className="grid grid-cols-3 gap-6 mb-8">
-          <Card className="glass">
+          <Card className="card">
             <CardContent className="p-5">
               <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[rgba(0,212,255,0.1)]">
-                  <Mail className="h-5 w-5 text-[#00d4ff]" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[rgba(226, 178, 74,0.1)]">
+                  <Mail className="h-5 w-5 text-[#e2b24a]" />
                 </div>
                 <div className="min-w-0">
                   <p
@@ -145,11 +145,11 @@ function CustomerDetailInner({ customerId }: { customerId: string }) {
               </div>
             </CardContent>
           </Card>
-          <Card className="glass">
+          <Card className="card">
             <CardContent className="p-5">
               <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[rgba(0,212,255,0.1)]">
-                  <Phone className="h-5 w-5 text-[#00d4ff]" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[rgba(226, 178, 74,0.1)]">
+                  <Phone className="h-5 w-5 text-[#e2b24a]" />
                 </div>
                 <div className="min-w-0">
                   <p
@@ -163,11 +163,11 @@ function CustomerDetailInner({ customerId }: { customerId: string }) {
               </div>
             </CardContent>
           </Card>
-          <Card className="glass">
+          <Card className="card">
             <CardContent className="p-5">
               <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[rgba(0,212,255,0.1)]">
-                  <MapPin className="h-5 w-5 text-[#00d4ff]" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[rgba(226, 178, 74,0.1)]">
+                  <MapPin className="h-5 w-5 text-[#e2b24a]" />
                 </div>
                 <div className="min-w-0">
                   <p
@@ -189,7 +189,7 @@ function CustomerDetailInner({ customerId }: { customerId: string }) {
             className="text-lg font-semibold text-white flex items-center gap-2"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            <FolderKanban className="h-5 w-5 text-[#00d4ff]" />
+            <FolderKanban className="h-5 w-5 text-[#e2b24a]" />
             Projects ({projects.length})
           </h2>
         </div>
@@ -201,9 +201,9 @@ function CustomerDetailInner({ customerId }: { customerId: string }) {
             ))}
           </div>
         ) : projects.length === 0 ? (
-          <div className="glass text-center py-24 rounded-xl">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[rgba(0,212,255,0.08)] mx-auto mb-5">
-              <FolderKanban className="h-8 w-8 text-[rgba(0,212,255,0.4)]" />
+          <div className="card">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[rgba(226, 178, 74,0.08)] mx-auto mb-5">
+              <FolderKanban className="h-8 w-8 text-[rgba(226, 178, 74,0.4)]" />
             </div>
             <h3
               className="text-lg font-semibold text-white mb-2"
@@ -226,13 +226,13 @@ function CustomerDetailInner({ customerId }: { customerId: string }) {
                 project.status === "completed"
                   ? "badge badge-success"
                   : project.status === "in_progress" || project.status === "active"
-                  ? "badge badge-cyan"
+                  ? "badge badge-gold"
                   : project.status === "cancelled"
                   ? "badge badge-error"
                   : "badge badge-muted"
               return (
                 <Link key={project.id} href={`/projects/${project.id}`}>
-                  <Card className="glass glass-hover h-full cursor-pointer transition-all duration-200">
+                  <Card className="card">
                     <CardContent className="p-5">
                       <h3
                         className="font-semibold text-white flex items-center gap-2 mb-2"
@@ -263,7 +263,7 @@ function CustomerDetailInner({ customerId }: { customerId: string }) {
 
       {/* Add Project Dialog */}
       <Dialog open={isAddProjectOpen} onOpenChange={setIsAddProjectOpen}>
-        <DialogContent className="glass border border-white/[0.09]">
+        <DialogContent className="card">
           <DialogHeader>
             <DialogTitle style={{ fontFamily: "var(--font-display)" }}>New Project</DialogTitle>
           </DialogHeader>

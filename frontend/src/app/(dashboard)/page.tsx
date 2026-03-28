@@ -43,7 +43,7 @@ const pipelineData = [
 
 const statusColors: Record<string, string> = {
   lead: "#f59e0b",
-  bid: "#3b82f6",
+  bid: "#e2b24a",
   active: "#10b981",
   completed: "#e2b24a",
   cancelled: "#6b7280",
@@ -77,7 +77,7 @@ export default function DashboardPage() {
 
   const pieData = [
     { name: "Active", value: activeCount, color: "#10b981" },
-    { name: "Bid", value: bidCount, color: "#3b82f6" },
+    { name: "Bid", value: bidCount, color: "#e2b24a" },
     { name: "Lead", value: leadCount, color: "#f59e0b" },
     { name: "Completed", value: completedCount, color: "#e2b24a" },
   ].filter((d) => d.value > 0)
@@ -116,7 +116,7 @@ export default function DashboardPage() {
       title: "Deals Won",
       value: completedCount,
       icon: Sparkles,
-      color: "#7c3aed",
+      color: "#e2b24a",
       gradient: "linear-gradient(135deg, rgba(124,58,237,0.15), rgba(124,58,237,0.04))",
       border: "rgba(124,58,237,0.2)",
       description: "Successfully closed",
@@ -517,7 +517,7 @@ export default function DashboardPage() {
               {[
                 { href: "/projects/new", icon: FolderKanban, label: "New Project", sub: "Start a fresh estimate", color: "#e2b24a" },
                 { href: "/customers/new", icon: Users, label: "Add Customer", sub: "Add to your roster", color: "#10b981" },
-                { href: "/projects", icon: FileText, label: "All Projects", sub: "Browse & manage", color: "#7c3aed" },
+                { href: "/projects", icon: FileText, label: "All Projects", sub: "Browse & manage", color: "#e2b24a" },
                 { href: "/settings/ghl", icon: Ruler, label: "GHL Setup", sub: "Integrate your CRM", color: "#f59e0b" },
               ].map((action) => (
                 <Link key={action.href} href={action.href} style={{ textDecoration: "none" }}>

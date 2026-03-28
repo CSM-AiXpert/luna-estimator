@@ -131,7 +131,7 @@ export default function TeamPage() {
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="glass" style={{ padding: "16px", display: "flex", gap: "16px", alignItems: "center" }}>
+              <div key={i} className="card" style={{ padding: "16px", display: "flex", gap: "16px", alignItems: "center" }}>
                 <div className="skeleton" style={{ width: "40px", height: "40px", borderRadius: "50%" }} />
                 <div className="flex-1 space-y-2">
                   <div className="skeleton" style={{ height: "14px", width: "40%", borderRadius: "4px" }} />
@@ -141,15 +141,15 @@ export default function TeamPage() {
             ))}
           </div>
         ) : members?.length === 0 ? (
-          <div className="glass text-center py-12">
+          <div className="card">
             <div
               style={{
                 width: "56px", height: "56px", borderRadius: "16px",
-                background: "rgba(0,212,255,0.06)", border: "1px solid rgba(0,212,255,0.1)",
+                background: "rgba(226, 178, 74,0.06)", border: "1px solid rgba(226, 178, 74,0.1)",
                 display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px",
               }}
             >
-              <Building2 className="h-6 w-6" style={{ color: "var(--accent-cyan)" }} />
+              <Building2 className="h-6 w-6" style={{ color: "#e2b4a" }} />
             </div>
             <p style={{ fontSize: "14px", color: "var(--text-muted)" }}>No team members yet</p>
             <Button onClick={() => setIsInviteOpen(true)} className="btn-primary mt-4" style={{ height: "36px" }}>
@@ -161,7 +161,7 @@ export default function TeamPage() {
             {(members ?? []).map((member) => (
               <div
                 key={member.id}
-                className="glass glass-hover"
+                className="card card-hover"
                 style={{ padding: "16px", display: "flex", gap: "16px", alignItems: "center" }}
               >
                 {/* Avatar */}
@@ -191,7 +191,7 @@ export default function TeamPage() {
                       {member.full_name ?? "—"}
                     </p>
                     {member.id === user?.id && (
-                      <span style={{ fontSize: "10px", color: "var(--accent-cyan)", fontFamily: "var(--font-display)", fontWeight: 600, background: "rgba(0,212,255,0.08)", padding: "1px 6px", borderRadius: "99px", border: "1px solid rgba(0,212,255,0.2)" }}>
+                      <span style={{ fontSize: "10px", color: "#e2b4a", fontFamily: "var(--font-display)", fontWeight: 600, background: "rgba(226, 178, 74,0.08)", padding: "1px 6px", borderRadius: "99px", border: "1px solid rgba(226, 178, 74,0.2)" }}>
                         You
                       </span>
                     )}
@@ -241,7 +241,7 @@ export default function TeamPage() {
             style={{
               height: "2px",
               borderRadius: "18px 18px 0 0",
-              background: "linear-gradient(90deg, transparent, rgba(0,212,255,0.5), transparent)",
+              background: "linear-gradient(90deg, transparent, rgba(226, 178, 74,0.5), transparent)",
               margin: "-16px -16px 0",
             }}
           />

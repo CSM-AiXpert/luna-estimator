@@ -112,9 +112,9 @@ export default function CustomersPage() {
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="glass text-center py-24 rounded-xl">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[rgba(0,212,255,0.08)] mx-auto mb-5">
-              <Users className="h-8 w-8 text-[rgba(0,212,255,0.4)]" />
+          <div className="card">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[rgba(226, 178, 74,0.08)] mx-auto mb-5">
+              <Users className="h-8 w-8 text-[rgba(226, 178, 74,0.4)]" />
             </div>
             <h3
               className="text-lg font-semibold text-white mb-2"
@@ -135,12 +135,12 @@ export default function CustomersPage() {
         ) : (
           <div className="grid gap-4 stagger-children">
             {filtered.map((customer) => (
-              <Card key={customer.id} className="glass glass-hover transition-all duration-200">
+              <Card key={customer.id} className="card">
                 <CardContent className="p-5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4 flex-1 min-w-0">
                       <div
-                        className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[rgba(0,212,255,0.2)] to-[rgba(59,130,246,0.2)] text-[#00d4ff] font-bold text-sm flex-shrink-0"
+                        className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[rgba(226, 178, 74,0.2)] to-[rgba(59,130,246,0.2)] text-[#e2b24a] font-bold text-sm flex-shrink-0"
                         style={{ fontFamily: "var(--font-display)" }}
                       >
                         {`${customer.first_name} ${customer.last_name}`
@@ -153,7 +153,7 @@ export default function CustomersPage() {
                       <div className="flex-1 min-w-0">
                         <Link
                           href={`/customers/${customer.id}`}
-                          className="font-semibold text-white hover:text-[#00d4ff] transition-colors flex items-center gap-2"
+                          className="font-semibold text-white hover:text-[#e2b24a] transition-colors flex items-center gap-2"
                           style={{ fontFamily: "var(--font-display)" }}
                         >
                           {`${customer.first_name} ${customer.last_name}`}
@@ -202,7 +202,7 @@ export default function CustomersPage() {
 
       {/* Add Customer Dialog */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="glass border border-white/[0.09]">
+        <DialogContent className="card">
           <DialogHeader>
             <DialogTitle style={{ fontFamily: "var(--font-display)" }}>Add Customer</DialogTitle>
           </DialogHeader>

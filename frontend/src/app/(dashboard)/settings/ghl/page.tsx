@@ -251,7 +251,7 @@ export default function GHLPage() {
       <div className="p-8 max-w-2xl space-y-6">
         {/* Status */}
         <div
-          className="glass"
+          className="card"
           style={{
             padding: "20px",
             display: "flex",
@@ -294,7 +294,7 @@ export default function GHLPage() {
         {/* Auto-sync toggles */}
         {isConnected && (
           <>
-            <div className="glass" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
+            <div className="card" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
               <div>
                 <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "14px", marginBottom: "4px" }}>
                   Auto-Sync
@@ -322,7 +322,7 @@ export default function GHLPage() {
             </div>
 
             {/* Field mappings */}
-            <div className="glass" style={{ padding: "20px" }}>
+            <div className="card" style={{ padding: "20px" }}>
               <div style={{ marginBottom: "16px" }}>
                 <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "14px", marginBottom: "4px" }}>
                   Field Mappings
@@ -348,7 +348,7 @@ export default function GHLPage() {
                         padding: "6px 10px", borderRadius: "6px",
                         background: "rgba(255,255,255,0.04)",
                         border: "1px solid rgba(255,255,255,0.06)",
-                        color: "var(--accent-cyan)",
+                        color: "#e2b4a",
                       }}
                     >
                       {mapping.ghl}
@@ -364,15 +364,15 @@ export default function GHLPage() {
 
             {/* Pipeline info */}
             {settings?.pipeline_id && (
-              <div className="glass" style={{ padding: "20px" }}>
+              <div className="card" style={{ padding: "20px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                  <Zap className="h-4 w-4" style={{ color: "var(--accent-cyan)" }} />
+                  <Zap className="h-4 w-4" style={{ color: "#e2b4a" }} />
                   <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "14px" }}>
                     Active Pipeline
                   </h3>
                 </div>
                 <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>
-                  Pipeline ID: <code style={{ fontFamily: "var(--font-mono)", color: "var(--accent-cyan)" }}>{settings.pipeline_id}</code>
+                  Pipeline ID: <code style={{ fontFamily: "var(--font-mono)", color: "#e2b4a" }}>{settings.pipeline_id}</code>
                 </p>
               </div>
             )}
@@ -381,7 +381,7 @@ export default function GHLPage() {
 
         {/* Help text */}
         {!isConnected && (
-          <div className="glass" style={{ padding: "20px" }}>
+          <div className="card" style={{ padding: "20px" }}>
             <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "14px", marginBottom: "12px" }}>
               How to connect
             </h3>
@@ -389,14 +389,14 @@ export default function GHLPage() {
               <li>Log in to your GoHighLevel account</li>
               <li>Go to <strong style={{ color: "var(--text-secondary)" }}>Settings → Integrations → Private Integrations</strong></li>
               <li>Create a new Private Integration with read/write access</li>
-              <li>Copy the <code style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--accent-cyan)" }}>Client ID</code>, <code style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--accent-cyan)" }}>Client Secret</code>, and your <code style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--accent-cyan)" }}>Location ID</code></li>
+              <li>Copy the <code style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "#e2b4a" }}>Client ID</code>, <code style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "#e2b4a" }}>Client Secret</code>, and your <code style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "#e2b4a" }}>Location ID</code></li>
               <li>Paste those values here and click <strong style={{ color: "var(--text-secondary)" }}>Connect GHL</strong></li>
             </ol>
             <a
               href="https://help.gohighlevel.com/support/solutions/articles/48001071023-private-integration"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ display: "inline-flex", alignItems: "center", gap: "4px", marginTop: "12px", fontSize: "13px", color: "var(--accent-cyan)" }}
+              style={{ display: "inline-flex", alignItems: "center", gap: "4px", marginTop: "12px", fontSize: "13px", color: "#e2b4a" }}
             >
               <ExternalLink className="h-3.5 w-3.5" />
               GHL Private Integration Guide
@@ -419,7 +419,7 @@ export default function GHLPage() {
             style={{
               height: "2px",
               borderRadius: "18px 18px 0 0",
-              background: "linear-gradient(90deg, transparent, rgba(0,212,255,0.5), transparent)",
+              background: "linear-gradient(90deg, transparent, rgba(226, 178, 74,0.5), transparent)",
               margin: "-16px -16px 0",
             }}
           />

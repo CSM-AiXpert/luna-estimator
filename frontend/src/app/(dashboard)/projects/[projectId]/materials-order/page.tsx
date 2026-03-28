@@ -61,7 +61,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 function categoryGradient(category: string): string {
   const map: Record<string, string> = {
-    "Drywall": "linear-gradient(135deg, rgba(0,212,255,0.12), rgba(59,130,246,0.06))",
+    "Drywall": "linear-gradient(135deg, rgba(226, 178, 74,0.12), rgba(59,130,246,0.06))",
     "Paint": "linear-gradient(135deg, rgba(124,58,237,0.12), rgba(236,72,153,0.06))",
     "Trim & Molding": "linear-gradient(135deg, rgba(245,158,11,0.12), rgba(234,179,8,0.06))",
     "Fasteners": "linear-gradient(135deg, rgba(16,185,129,0.12), rgba(6,182,212,0.06))",
@@ -181,7 +181,7 @@ export default function MaterialsOrderPage({
   const statusBadge = (status: string) => {
     const map: Record<string, { color: string; bg: string }> = {
       draft: { color: "#f59e0b", bg: "rgba(245,158,11,0.12)" },
-      finalized: { color: "#3b82f6", bg: "rgba(59,130,246,0.12)" },
+      finalized: { color: "#e2b24a", bg: "rgba(59,130,246,0.12)" },
       ordered: { color: "#10b981", bg: "rgba(16,185,129,0.12)" },
       cancelled: { color: "#6b7280", bg: "rgba(107,114,128,0.12)" },
     }
@@ -290,18 +290,18 @@ export default function MaterialsOrderPage({
 
         {!latestOrder && !ordersLoading && (
           <div
-            className="glass text-center py-16"
+            className="card"
             style={{ padding: "48px" }}
           >
             <div
               style={{
                 width: "72px", height: "72px", borderRadius: "20px",
-                background: "rgba(0,212,255,0.08)", border: "1px solid rgba(0,212,255,0.15)",
+                background: "rgba(226, 178, 74,0.08)", border: "1px solid rgba(226, 178, 74,0.15)",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 margin: "0 auto 20px",
               }}
             >
-              <Package className="h-8 w-8" style={{ color: "var(--accent-cyan)" }} />
+              <Package className="h-8 w-8" style={{ color: "#e2b4a" }} />
             </div>
             <h3
               className="font-bold mb-2"
@@ -328,7 +328,7 @@ export default function MaterialsOrderPage({
           <>
             {/* Order summary bar */}
             <div
-              className="glass mb-6"
+              className="card"
               style={{
                 padding: "16px 24px",
                 display: "flex",
@@ -383,7 +383,7 @@ export default function MaterialsOrderPage({
                 const expanded = expandedCategories.has(category)
 
                 return (
-                  <div key={category} className="glass" style={{ overflow: "hidden" }}>
+                  <div key={category} className="card" style={{ overflow: "hidden" }}>
                     {/* Category header */}
                     <button
                       onClick={() => toggleCategory(category)}
@@ -427,7 +427,7 @@ export default function MaterialsOrderPage({
                           fontFamily: "var(--font-display)",
                           fontWeight: 700,
                           fontSize: "13px",
-                          color: "var(--accent-cyan)",
+                          color: "#e2b4a",
                         }}
                       >
                         {formatCurrency(catTotal)}
@@ -476,8 +476,8 @@ export default function MaterialsOrderPage({
                                         autoFocus
                                         style={{
                                           width: "64px", padding: "4px 8px",
-                                          background: "rgba(0,212,255,0.06)",
-                                          border: "1px solid rgba(0,212,255,0.3)",
+                                          background: "rgba(226, 178, 74,0.06)",
+                                          border: "1px solid rgba(226, 178, 74,0.3)",
                                           borderRadius: "6px",
                                           color: "var(--text-primary)",
                                           fontSize: "13px",
@@ -554,13 +554,13 @@ export default function MaterialsOrderPage({
 
             {/* Grand total footer */}
             <div
-              className="glass mt-6"
+              className="card"
               style={{
                 padding: "20px 24px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                borderTop: "2px solid rgba(0,212,255,0.15)",
+                borderTop: "2px solid rgba(226, 178, 74,0.15)",
               }}
             >
               <div>
