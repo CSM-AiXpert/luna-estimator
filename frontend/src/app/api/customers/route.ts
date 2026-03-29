@@ -1,6 +1,6 @@
+import { NextRequest, NextResponse } from "next/server"
 import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
-import { NextRequest, NextResponse } from "next/server"
 import { Database } from "@/lib/supabase/types"
 
 async function getSupabase() {
@@ -13,7 +13,7 @@ async function getSupabase() {
         getAll() { return cookieStore.getAll() },
         setAll(cookiesToSet) {
           try { cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options)) }
-          catch { /* Server Component — ignore */ }
+          catch { /* ignore */ }
         },
       },
     }
@@ -23,14 +23,25 @@ async function getSupabase() {
 export async function GET(req: NextRequest) {
   try {
     const supabase = await getSupabase()
-    const { data: customers, error } = await supabase
-      .from("customers")
-      .select("*, projects(id, name, status)")
-      .order("created_at", { ascending: false })
-      .limit(50)
+    // @ts-ignore
+    const { data: { user } } = await supabase.auth.getUser()
+    // @ts-ignore
+    const uid = (user as any)?.id
+    if (!uid) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+    // @ts-ignore
+    const { data: profile } = await (supabase.from("users") as any)
+      .select("organization_id").eq("id", uid).single()
+    const orgId = (profile as any)?.organization_id
+    if (!orgId) return NextResponse.json({ error: "No organization" }, { status: 400 })
+
+    // @ts-ignore
+    const { data: customers, error } = await (supabase.from("customers") as any)
+      .select("*").eq("organization_id", orgId).order("created_at", { ascending: false })
+
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json(customers ?? [])
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 })
   }
 }
@@ -38,15 +49,29 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const supabase = await getSupabase()
+    // @ts-ignore
+    const { data: { user } } = await supabase.auth.getUser()
+    // @ts-ignore
+    const uid = (user as any)?.id
+    if (!uid) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+    // @ts-ignore
+    const { data: profile } = await (supabase.from("users") as any)
+      .select("organization_id").eq("id", uid).single()
+    const orgId = (profile as any)?.organization_id
+    if (!orgId) return NextResponse.json({ error: "No organization" }, { status: 400 })
+
     const body = await req.json()
-    const { data: customer, error } = await supabase
-      .from("customers")
-      .insert(body)
+
+    // @ts-ignore
+    const { data: customer, error } = await (supabase.from("customers") as any)
+      .insert({ ...body, organization_id: orgId })
       .select()
       .single()
+
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
     return NextResponse.json(customer, { status: 201 })
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 })
   }
 }

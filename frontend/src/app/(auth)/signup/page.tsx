@@ -48,18 +48,6 @@ export default function SignupPage() {
     setError(null)
 
     try {
-      const orgResponse = await fetch("/api/organizations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: data.orgName }),
-      })
-
-      if (!orgResponse.ok) {
-        throw new Error("Failed to create organization")
-      }
-
-      const { organization } = await orgResponse.json()
-
       if (data.useMagicLink) {
         const supabase = getSupabaseClient()
         if (!supabase) { setError("Auth not available"); setIsLoading(false); return }
@@ -68,7 +56,7 @@ export default function SignupPage() {
           options: {
             emailRedirectTo: `${window.location.origin}/auth/callback`,
             data: {
-              organization_id: organization.id,
+              org_name: data.orgName,
               full_name: data.fullName,
             },
           },
@@ -80,20 +68,29 @@ export default function SignupPage() {
         return
       }
 
-      const supabase2 = getSupabaseClient()
-      if (!supabase2) { setError("Auth not available"); setIsLoading(false); return }
-      const { error: signUpError } = await supabase2.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          data: {
-            organization_id: organization.id,
-            full_name: data.fullName,
-          },
-        },
+      // Use server API for full signup (creates auth user + org + profile via service role)
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+          fullName: data.fullName,
+          orgName: data.orgName,
+        }),
       })
 
-      if (signUpError) throw signUpError
+      const result = await res.json()
+      if (!res.ok) throw new Error(result.error ?? "Signup failed")
+
+      // Sign in after successful signup
+      const supabase = getSupabaseClient()
+      if (!supabase) { setError("Auth not available"); setIsLoading(false); return }
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      })
+      if (signInError) throw signInError
 
       router.push("/")
       router.refresh()
